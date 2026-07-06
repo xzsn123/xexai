@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品详情 - 学而行 AI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
+                <img src="学而行商标.7970109acf.png" class="logo-img" alt="学而行 AI">
+                <span>学而行 AI</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="works.html" class="active">作品库</a></li>
+                <li><a href="team.html">本次活动成员</a></li>
+                <li><a href="contact.html">联系我们</a></li>
+            </ul>
+            <div class="nav-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" placeholder="搜索作品...">
+            </div>
+            <button class="hamburger" aria-label="菜单">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 详情内容 -->
+    <div class="container" id="detailContent"></div>
+
+    <!-- 相关推荐 -->
+    <div class="container" id="relatedWorks"></div>
+
+    <!-- 灯箱 -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close">&times;</button>
+        <button class="lightbox-nav prev" onclick="navigateLightbox(-1)">‹</button>
+        <img id="lightboxImg" src="" alt="">
+        <button class="lightbox-nav next" onclick="navigateLightbox(1)">›</button>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <h3><img src="学而行商标.7970109acf.png" class="logo-img" alt="学而行 AI" style="display:inline-block;vertical-align:middle;margin-right:8px"> 学而行 AI</h3>
+                    <p>以技术驱动创意，用作品改变世界。</p>
+                </div>
+                <div class="footer-col">
+                    <h4>快速导航</h4>
+                    <a href="index.html">首页</a>
+                    <a href="works.html">作品库</a>
+                    <a href="team.html">本次活动成员</a>
+                    <a href="contact.html">联系我们</a>
+                </div>
+                <div class="footer-col">
+                    <h4>作品分类</h4>
+                    <a href="works.html?category=web">网页应用</a>
+                    <a href="works.html?category=game">HTML游戏</a>
+                    <a href="works.html?category=video">视频作品</a>
+                    <a href="works.html?category=image">图片作品</a>
+                </div>
+                <div class="footer-col">
+                    <h4>联系方式</h4>
+                    <a href="#">📧 studio@example.com</a>
+                    <a href="#">🏫 东川高级中学</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2025 学而行 AI. All rights reserved.</span>
+                <div class="footer-social">
+                    <a href="#" title="GitHub">⌂</a>
+                    <a href="#" title="bilibili">▶</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

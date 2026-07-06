@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>本次活动成员 - 学而行 AI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
+                <img src="学而行商标.7970109acf.png" class="logo-img" alt="学而行 AI">
+                <span>学而行 AI</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="works.html">作品库</a></li>
+                <li><a href="team.html" class="active">本次活动成员</a></li>
+                <li><a href="contact.html">联系我们</a></li>
+            </ul>
+            <div class="nav-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" placeholder="搜索作品...">
+            </div>
+            <button class="hamburger" aria-label="菜单">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <section class="page-header">
+        <div class="container">
+            <h1>本次活动成员</h1>
+            <p class="subtitle">一群热爱技术、设计和创意的年轻人</p>
+        </div>
+    </section>
+
+    <!-- 团队简介 -->
+    <div class="container">
+        <div class="team-intro fade-in">
+            <p>本次活动与2026年6月29日至7月4日，作品制作成员由东川高级中学校高一同学组成。我们相信"技术+创意"的力量，致力于创作有影响力的数字作品。团队分为六个小组，涵盖网页应用、HTML游戏、视频作品、图片作品四大方向，本次活动累计创作多个作品。</p>
+
+            <!-- 团队数据统计 -->
+            <div style="margin-top:32px" id="teamStats"></div>
+        </div>
+    </div>
+
+    <!-- 核心成员 -->
+    <section class="section" style="padding-top:0">
+        <div class="container">
+            <div class="section-header">
+                <span class="team-section-title">核心成员</span>
+            </div>
+
+            <!-- 按组别分类 -->
+            <div style="margin-bottom:40px">
+                <h3 style="font-size:1.1rem;color:var(--text-secondary);margin-bottom:20px;padding-left:4px">⭐ 第一组</h3>
+                <div class="members-grid" id="membersG1"></div>
+            </div>
+            <div style="margin-bottom:40px">
+                <h3 style="font-size:1.1rem;color:var(--text-secondary);margin-bottom:20px;padding-left:4px">🎯 第二组</h3>
+                <div class="members-grid" id="membersG2"></div>
+            </div>
+            <div style="margin-bottom:40px">
+                <h3 style="font-size:1.1rem;color:var(--text-secondary);margin-bottom:20px;padding-left:4px">🔬 第三组</h3>
+                <div class="members-grid" id="membersG3"></div>
+            </div>
+            <div style="margin-bottom:40px">
+                <h3 style="font-size:1.1rem;color:var(--text-secondary);margin-bottom:20px;padding-left:4px">📐 第四组</h3>
+                <div class="members-grid" id="membersG4"></div>
+            </div>
+            <div style="margin-bottom:40px">
+                <h3 style="font-size:1.1rem;color:var(--text-secondary);margin-bottom:20px;padding-left:4px">🎨 第五组</h3>
+                <div class="members-grid" id="membersG5"></div>
+            </div>
+            <div style="margin-bottom:40px">
+                <h3 style="font-size:1.1rem;color:var(--text-secondary);margin-bottom:20px;padding-left:4px">🚀 第六组</h3>
+                <div class="members-grid" id="membersG6"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <h3><img src="学而行商标.7970109acf.png" class="logo-img" alt="学而行 AI" style="display:inline-block;vertical-align:middle;margin-right:8px"> 学而行 AI</h3>
+                    <p>以技术驱动创意，用作品改变世界。</p>
+                </div>
+                <div class="footer-col">
+                    <h4>快速导航</h4>
+                    <a href="index.html">首页</a>
+                    <a href="works.html">作品库</a>
+                    <a href="team.html">本次活动成员</a>
+                    <a href="contact.html">联系我们</a>
+                </div>
+                <div class="footer-col">
+                    <h4>作品分类</h4>
+                    <a href="works.html?category=web">网页应用</a>
+                    <a href="works.html?category=game">HTML游戏</a>
+                    <a href="works.html?category=video">视频作品</a>
+                    <a href="works.html?category=image">图片作品</a>
+                </div>
+                <div class="footer-col">
+                    <h4>联系方式</h4>
+                    <a href="#">📧 studio@example.com</a>
+                    <a href="#">🏫 东川高级中学</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2025 学而行 AI. All rights reserved.</span>
+                <div class="footer-social">
+                    <a href="#" title="GitHub">⌂</a>
+                    <a href="#" title="bilibili">▶</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // 渲染成员按组别
+        const groups = {
+            membersG1: '第一组',
+            membersG2: '第二组',
+            membersG3: '第三组',
+            membersG4: '第四组',
+            membersG5: '第五组',
+            membersG6: '第六组'
+        };
+
+        Object.entries(groups).forEach(([elId, groupName]) => {
+            const el = document.getElementById(elId);
+            const members = TEAM_MEMBERS.filter(m => m.group === groupName);
+            if (el && members.length > 0) {
+                el.innerHTML = members.map(m => `
+                    <div class="member-card fade-in">
+                        <div class="member-avatar">${m.name.charAt(0)}</div>
+                        <h3>${m.name}</h3>
+                        <p class="role">${m.role}</p>
+                        <p class="bio">${m.bio}</p>
+                    </div>
+                `).join('');
+            }
+        });
+
+
+    </script>
+</body>
+</html>

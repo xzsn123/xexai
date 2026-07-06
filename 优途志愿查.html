@@ -1,0 +1,2828 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>优途志愿查 · 高考志愿一键查</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    color: #333;
+  }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    overflow: hidden;
+  }
+  header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    padding: 32px 28px;
+    text-align: center;
+  }
+  header h1 { font-size: 28px; margin-bottom: 8px; letter-spacing: 2px; }
+  header p { opacity: 0.85; font-size: 14px; }
+  .tabs { display: flex; border-bottom: 1px solid #eee; background: #fafafa; }
+  .tab {
+    flex: 1; padding: 18px; text-align: center; cursor: pointer;
+    font-size: 15px; font-weight: 500; color: #666;
+    border-bottom: 3px solid transparent; transition: all 0.2s;
+  }
+  .tab:hover { color: #667eea; }
+  .tab.active {
+    color: #667eea; background: #fff;
+    border-bottom-color: #667eea; font-weight: 700;
+  }
+  .content { padding: 28px; min-height: 400px; }
+  .panel { display: none; }
+  .panel.active { display: block; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from {opacity:0; transform: translateY(8px);} to {opacity:1; transform: translateY(0);} }
+
+  .filter-bar { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filter-bar input, .filter-bar select {
+    padding: 10px 14px; border: 1px solid #e0e0e0;
+    border-radius: 8px; font-size: 14px; outline: none;
+    transition: border 0.2s; background: #fff;
+  }
+  .filter-bar input { flex: 1; min-width: 200px; }
+  .filter-bar input:focus, .filter-bar select:focus { border-color: #667eea; }
+
+  .college-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .college-card {
+    background: #f8f9fc; border-radius: 12px; padding: 18px;
+    border-left: 4px solid #667eea;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .college-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 24px rgba(102,126,234,0.18);
+  }
+  .college-card h3 { font-size: 18px; margin-bottom: 10px; color: #333; }
+  .college-meta { font-size: 13px; color: #666; margin-bottom: 8px; }
+  .college-meta .label { color: #999; }
+  .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .tag {
+    font-size: 12px; padding: 3px 10px; border-radius: 12px;
+    background: #e8eaf6; color: #5c6bc0;
+  }
+
+  .major-list {
+    margin-bottom: 24px;
+  }
+  .major-group { margin-bottom: 22px; }
+  .major-group:last-child { margin-bottom: 0; }
+  .major-group-title {
+    font-size: 15px; font-weight: 600; color: #667eea;
+    padding: 6px 0 10px; margin-bottom: 10px;
+    border-bottom: 1px dashed #d5d9f0;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .major-group-count {
+    display: inline-block;
+    background: #eef0ff; color: #667eea;
+    font-size: 12px; font-weight: 500;
+    padding: 1px 8px; border-radius: 10px;
+  }
+  .major-group-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+  .major-btn {
+    padding: 14px; background: #f8f9fc;
+    border: 2px solid transparent; border-radius: 10px;
+    cursor: pointer; font-size: 15px;
+    transition: all 0.2s; text-align: center;
+  }
+  .major-btn:hover { background: #e8eaf6; border-color: #667eea; }
+  .major-btn.active {
+    background: #667eea; color: #fff;
+    border-color: #667eea;
+    box-shadow: 0 6px 16px rgba(102,126,234,0.35);
+  }
+
+  .major-detail {
+    background: #f8f9fc; border-radius: 12px; padding: 22px;
+    border-top: 4px solid #667eea;
+    animation: fadeIn 0.3s ease;
+  }
+  .major-detail h3 { font-size: 22px; margin-bottom: 16px; color: #333; }
+  .detail-row {
+    margin-bottom: 14px; padding: 12px 14px;
+    background: #fff; border-radius: 8px;
+    border-left: 3px solid #ddd;
+  }
+  .detail-row.course { border-left-color: #42a5f5; }
+  .detail-row.advantage { border-left-color: #66bb6a; }
+  .detail-row.disadvantage { border-left-color: #ef5350; }
+  .detail-row.job { border-left-color: #ffa726; }
+  .detail-label {
+    font-size: 13px; font-weight: 600;
+    color: #666; margin-bottom: 6px;
+  }
+  .detail-text { font-size: 14px; line-height: 1.7; color: #444; }
+
+  .empty {
+    text-align: center; padding: 40px 20px;
+    color: #999; font-size: 14px;
+  }
+  footer {
+    text-align: center; padding: 16px;
+    font-size: 12px; color: #999; background: #fafafa;
+  }
+  /* ============ 强校推荐（专业面板） ============ */
+  .top-colleges {
+    margin-top: 20px;
+    padding: 16px 18px;
+    background: linear-gradient(135deg, #f5f7ff 0%, #fdf4ff 100%);
+    border-radius: 10px;
+    border-left: 4px solid #764ba2;
+  }
+  .top-colleges-title {
+    font-size: 15px; font-weight: 600;
+    color: #764ba2; margin-bottom: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .top-college-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 10px;
+  }
+  .top-college-item {
+    background: #fff; padding: 10px 12px;
+    border-radius: 8px; font-size: 13px;
+    border: 1px solid #e8dcf0;
+    transition: all 0.2s;
+  }
+  .top-college-item:hover {
+    border-color: #764ba2;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(118,75,162,0.15);
+  }
+  .top-college-item .name {
+    font-weight: 600; color: #333;
+    margin-bottom: 4px;
+  }
+  .top-college-item .meta {
+    font-size: 11px; color: #999;
+    display: flex; justify-content: space-between;
+  }
+  .top-college-item .level-tag {
+    color: #764ba2; font-weight: 500;
+  }
+  .top-college-item .rank-tag {
+    background: #f5f0fa; color: #764ba2;
+    padding: 1px 6px; border-radius: 8px;
+    font-weight: 500;
+  }
+  .top-colleges-empty {
+    font-size: 13px; color: #999; padding: 8px 0;
+  }
+
+  /* ============ 分数推荐 tab ============ */
+  .score-input-panel {
+    background: #f8f9fc; border-radius: 12px;
+    padding: 24px; margin-bottom: 20px;
+    border-top: 4px solid #667eea;
+  }
+  .score-input-title {
+    font-size: 17px; font-weight: 600;
+    color: #333; margin-bottom: 16px;
+  }
+  .score-input-row {
+    display: flex; gap: 12px; align-items: center;
+    flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .score-input-row label {
+    font-size: 14px; color: #555; min-width: 80px;
+  }
+  .score-input-row input[type=number] {
+    padding: 10px 14px; border: 1px solid #ddd;
+    border-radius: 8px; font-size: 14px;
+    width: 140px; outline: none;
+  }
+  .score-input-row input[type=number]:focus { border-color: #667eea; }
+  .score-input-row select {
+    padding: 10px 14px; border: 1px solid #ddd;
+    border-radius: 8px; font-size: 14px;
+    background: #fff; outline: none;
+  }
+  .btn-recommend {
+    padding: 10px 24px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff; border: none; border-radius: 8px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .btn-recommend:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(102,126,234,0.35);
+  }
+  .score-tip {
+    font-size: 12px; color: #888;
+    margin-top: 8px; line-height: 1.6;
+  }
+
+  .recommend-group {
+    background: #fff; border-radius: 12px;
+    padding: 20px; margin-bottom: 16px;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.05);
+  }
+  .recommend-group.chong { border-left: 5px solid #ef5350; }
+  .recommend-group.wen { border-left: 5px solid #66bb6a; }
+  .recommend-group.bao { border-left: 5px solid #42a5f5; }
+  .recommend-group-header {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .recommend-group-title {
+    font-size: 17px; font-weight: 700;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .recommend-group.chong .recommend-group-title { color: #d84545; }
+  .recommend-group.wen .recommend-group-title { color: #46a04a; }
+  .recommend-group.bao .recommend-group-title { color: #2e88d4; }
+  .recommend-group-desc {
+    font-size: 12px; color: #999;
+  }
+  .recommend-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .recommend-card {
+    background: #f8f9fc; padding: 12px 14px;
+    border-radius: 8px; border: 1px solid #eee;
+    transition: all 0.2s; cursor: pointer; position: relative;
+  }
+  .recommend-card:hover {
+    background: #fff; box-shadow: 0 6px 16px rgba(0,0,0,0.08);
+    transform: translateY(-2px); border-color: #d5dbff;
+  }
+  .recommend-card::after {
+    content: "查看详情 →";
+    position: absolute; right: 12px; bottom: 10px;
+    font-size: 11px; color: #667eea; opacity: 0;
+    transition: opacity .2s;
+  }
+  .recommend-card:hover::after { opacity: 1; }
+  .recommend-card .rc-name {
+    font-size: 15px; font-weight: 600;
+    color: #333; margin-bottom: 4px;
+  }
+  .recommend-card .rc-meta {
+    font-size: 12px; color: #666; margin-bottom: 6px;
+  }
+  .recommend-card .rc-tags {
+    display: flex; flex-wrap: wrap; gap: 4px;
+  }
+  .recommend-card .rc-tag {
+    font-size: 11px; padding: 2px 8px;
+    background: #eef0ff; color: #5c6bc0;
+    border-radius: 8px;
+  }
+
+  /* ============ 院校详情弹层 ============ */
+  .college-card { cursor: pointer; position: relative; }
+  .college-card::after {
+    content: "点击查看详情 →";
+    position: absolute; right: 14px; bottom: 12px;
+    font-size: 12px; color: #667eea; opacity: 0;
+    transition: opacity .2s;
+  }
+  .college-card:hover::after { opacity: 1; }
+
+  .modal-mask {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(30, 34, 60, .55);
+    display: none; align-items: center; justify-content: center;
+    z-index: 999; padding: 20px;
+    backdrop-filter: blur(3px);
+  }
+  .modal-mask.show { display: flex; }
+  .modal-dialog {
+    background: #fff; border-radius: 16px;
+    width: 100%; max-width: 720px;
+    max-height: 88vh; overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+    animation: modalIn .25s ease-out;
+  }
+  @keyframes modalIn {
+    from { opacity: 0; transform: translateY(20px) scale(.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .modal-header {
+    padding: 22px 26px 16px; border-bottom: 1px solid #eef1f6;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    position: sticky; top: 0; background: #fff; z-index: 2;
+    border-radius: 16px 16px 0 0;
+  }
+  .modal-header h2 {
+    font-size: 22px; color: #2c3e50; margin: 0 0 6px;
+  }
+  .modal-header .sub {
+    font-size: 13px; color: #7a869a;
+  }
+  .modal-header .sub .level-badge {
+    display: inline-block; padding: 2px 10px; border-radius: 10px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff; font-size: 12px; margin-left: 8px;
+    font-weight: 600;
+  }
+  .modal-close {
+    background: #f4f6fa; border: none; border-radius: 50%;
+    width: 34px; height: 34px; font-size: 20px; cursor: pointer;
+    color: #666; transition: all .2s; flex-shrink: 0;
+    line-height: 34px; padding: 0;
+  }
+  .modal-close:hover { background: #e74c3c; color: #fff; }
+  .modal-body { padding: 20px 26px 26px; }
+
+  .info-block { margin-bottom: 22px; }
+  .info-block-title {
+    font-size: 15px; font-weight: 600; color: #333;
+    padding: 8px 12px; background: #f8f9fc;
+    border-left: 4px solid #667eea; border-radius: 4px;
+    margin-bottom: 12px;
+  }
+  .info-block-title.score { border-left-color: #f39c12; background: #fff8ec; }
+  .info-block-title.strong { border-left-color: #27ae60; background: #edfaf1; }
+  .info-block-title.lib { border-left-color: #9b59b6; background: #f6f0fa; }
+  .info-block-tip {
+    font-size: 12px; color: #999; margin-left: 8px; font-weight: 400;
+  }
+
+  .score-est-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+  }
+  .score-est-card {
+    padding: 16px; border-radius: 10px;
+    background: linear-gradient(135deg, #fff3d6 0%, #ffe0a3 100%);
+    text-align: center;
+  }
+  .score-est-card.arts {
+    background: linear-gradient(135deg, #ffe0e6 0%, #ffb8c8 100%);
+  }
+  .score-est-card .label {
+    font-size: 13px; color: #7a5a1a; margin-bottom: 6px; font-weight: 600;
+  }
+  .score-est-card.arts .label { color: #a44a5a; }
+  .score-est-card .value {
+    font-size: 30px; font-weight: 800; color: #b8730f;
+    letter-spacing: -1px;
+  }
+  .score-est-card.arts .value { color: #c53a5b; }
+  .score-est-card .suffix {
+    font-size: 14px; color: #7a5a1a; margin-left: 4px;
+  }
+  .score-est-card.arts .suffix { color: #a44a5a; }
+  .score-est-card .rank-info {
+    font-size: 12px; color: #666; margin-top: 6px;
+  }
+
+  .strong-major-list {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .strong-major-item {
+    padding: 8px 14px; border-radius: 20px;
+    background: linear-gradient(135deg, #d4f5e3, #a6e6c1);
+    color: #1e6b3f; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all .2s;
+    border: 1px solid transparent;
+  }
+  .strong-major-item:hover {
+    background: linear-gradient(135deg, #a6e6c1, #66d996);
+    border-color: #27ae60;
+  }
+  .strong-major-item.peak {
+    background: linear-gradient(135deg, #ffd97a, #ffb830);
+    color: #7a4a00;
+  }
+  .strong-major-item.peak:hover {
+    background: linear-gradient(135deg, #ffb830, #ff9500);
+  }
+  .strong-major-item .badge {
+    display: inline-block; padding: 1px 6px; border-radius: 8px;
+    font-size: 10px; background: rgba(255,255,255,.6);
+    margin-left: 4px; vertical-align: middle;
+  }
+  .strong-major-empty {
+    padding: 14px; text-align: center; color: #999; font-size: 13px;
+    background: #fafbfc; border-radius: 8px;
+  }
+  .lib-tags {
+    display: flex; flex-wrap: wrap; gap: 8px;
+  }
+  .lib-tag {
+    padding: 6px 12px; border-radius: 6px;
+    background: #f0eaf7; color: #6a3d99;
+    font-size: 12px; font-weight: 500;
+  }
+
+  @media (max-width: 600px) {
+    body { padding: 10px; }
+    header h1 { font-size: 22px; }
+    .tab { padding: 14px 8px; font-size: 13px; }
+    .content { padding: 18px; }
+    .modal-dialog { max-height: 92vh; }
+    .modal-header, .modal-body { padding-left: 18px; padding-right: 18px; }
+    .score-est-grid { grid-template-columns: 1fr; }
+    .score-est-card .value { font-size: 26px; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🎓 优途志愿查</h1>
+      <p>高考本科院校 &amp; 专业一键查询工具</p>
+    </header>
+
+    <nav class="tabs">
+      <div class="tab active" data-tab="college">📚 院校查询</div>
+      <div class="tab" data-tab="arts">📖 文科专业</div>
+      <div class="tab" data-tab="science">🔬 理科专业</div>
+      <div class="tab" data-tab="art">🎨 艺术专业</div>
+      <div class="tab" data-tab="score">📊 分数推荐</div>
+    </nav>
+
+    <main class="content">
+      <section class="panel active" id="panel-college">
+        <div class="filter-bar">
+          <input type="text" id="college-search" placeholder="🔍 搜索院校名称或所在地...">
+          <select id="province-filter">
+            <option value="">所有省份</option>
+          </select>
+        </div>
+        <div class="college-grid" id="college-grid"></div>
+      </section>
+
+      <section class="panel" id="panel-arts">
+        <div class="filter-bar">
+          <input type="text" id="arts-search" placeholder="🔍 搜索文科专业（支持模糊匹配，如「汉语」）...">
+        </div>
+        <div class="major-list" id="arts-list"></div>
+        <div id="arts-detail"></div>
+      </section>
+
+      <section class="panel" id="panel-science">
+        <div class="filter-bar">
+          <input type="text" id="science-search" placeholder="🔍 搜索理科专业（支持模糊匹配，如「计算机」）...">
+        </div>
+        <div class="major-list" id="science-list"></div>
+        <div id="science-detail"></div>
+      </section>
+
+      <section class="panel" id="panel-art">
+        <div class="filter-bar">
+          <input type="text" id="art-search" placeholder="🔍 搜索艺术专业（支持模糊匹配，如「播音」「设计」「舞蹈」）...">
+        </div>
+        <div class="major-list" id="art-list"></div>
+        <div id="art-detail"></div>
+      </section>
+
+      <section class="panel" id="panel-score">
+        <div class="score-input-panel">
+          <div class="score-input-title">🎯 输入分数或位次，一键推荐冲/稳/保院校</div>
+          <div class="score-input-row">
+            <label>输入方式：</label>
+            <select id="score-mode">
+              <option value="score">按高考分数</option>
+              <option value="rank">按全省位次</option>
+            </select>
+          </div>
+          <div class="score-input-row" id="row-score">
+            <label>高考分数：</label>
+            <input type="number" id="score-input" placeholder="如 620" min="150" max="750">
+            <select id="score-subject">
+              <option value="science">理科/物理组</option>
+              <option value="arts">文科/历史组</option>
+              <option value="art_ms">艺术类·美术（综合分）</option>
+              <option value="art_music">艺术类·音乐（综合分）</option>
+              <option value="art_bd">艺术类·编导/播音（综合分）</option>
+              <option value="art_culture">艺术类·仅文化课分</option>
+            </select>
+          </div>
+          <div class="score-input-row" id="row-rank" style="display:none;">
+            <label>全省位次：</label>
+            <input type="number" id="rank-input" placeholder="如 8000" min="1" max="500000">
+          </div>
+          <div class="score-input-row">
+            <label>优先省份：</label>
+            <select id="pref-prov">
+              <option value="">不限（全国）</option>
+            </select>
+            <button class="btn-recommend" id="btn-recommend">推荐院校</button>
+          </div>
+          <div class="score-tip">
+            💡 位次数据基于全国综合估算（参照大省理工口径），实际录取受当年招生计划、省份、专业组影响。仅供筛选参考，最终以当年官方分数线为准。<br>
+            🎨 <b>艺术生说明</b>：综合分按 <b>文化课×0.5 + 专业课×2.5×0.5（满分 750）</b> 主流口径估算；若你只有文化课分数，可选「仅文化课分」；艺术类结果会自动优先推荐艺术院校 + 艺术专业强校。
+          </div>
+        </div>
+        <div id="recommend-result"></div>
+      </section>
+    </main>
+
+    <footer>© 2026 优途志愿查 · 当前为示例数据，后续可扩展至 800+ 专业库</footer>
+  </div>
+
+  <!-- 院校详情弹层 -->
+  <div class="modal-mask" id="college-modal" onclick="if(event.target===this)closeCollegeModal()">
+    <div class="modal-dialog" id="college-modal-dialog"></div>
+  </div>
+
+<script>
+const collegeDB = [
+  // ============ 北京（26所211，含8所985）============
+  {name:"清华大学", prov:"北京", level:"985/211/C9/双一流", majorLib:["理工顶尖","计算机/建筑/电子","经管强"]},
+  {name:"北京大学", prov:"北京", level:"985/211/C9/双一流", majorLib:["文理综合顶尖","医学/法学/中文","基础学科顶配"]},
+  {name:"中国人民大学", prov:"北京", level:"985/211/双一流", majorLib:["人文社科顶尖","经济/法学/新闻/管理"]},
+  {name:"北京航空航天大学", prov:"北京", level:"985/211/双一流", majorLib:["航空航天顶尖","计算机/自动化"]},
+  {name:"北京理工大学", prov:"北京", level:"985/211/双一流", majorLib:["兵器/车辆","信息/机械/材料"]},
+  {name:"北京师范大学", prov:"北京", level:"985/211/双一流", majorLib:["教育学顶尖","心理学/文史/地理"]},
+  {name:"中国农业大学", prov:"北京", level:"985/211/双一流", majorLib:["农学顶尖","食品/生物/兽医"]},
+  {name:"中央民族大学", prov:"北京", level:"985/211/双一流", majorLib:["民族学顶尖","少数民族语言文学"]},
+  {name:"北京交通大学", prov:"北京", level:"211/双一流", majorLib:["交通运输","信息通信","轨道交通"]},
+  {name:"北京工业大学", prov:"北京", level:"211/双一流", majorLib:["工科综合","土木/机械/材料"]},
+  {name:"北京科技大学", prov:"北京", level:"211/双一流", majorLib:["冶金/材料顶尖","矿业/科学技术史"]},
+  {name:"北京化工大学", prov:"北京", level:"211/双一流", majorLib:["化学工程顶尖","材料/生物工程"]},
+  {name:"北京邮电大学", prov:"北京", level:"211/双一流", majorLib:["通信顶尖","信息/计算机/电子"]},
+  {name:"北京林业大学", prov:"北京", level:"211/双一流", majorLib:["林学顶尖","园林/风景园林/木材"]},
+  {name:"北京中医药大学", prov:"北京", level:"211/双一流", majorLib:["中医学顶尖","中药学/针灸推拿"]},
+  {name:"北京外国语大学", prov:"北京", level:"211/双一流", majorLib:["外语顶尖","覆盖101种语种/小语种最全"]},
+  {name:"中国传媒大学", prov:"北京", level:"211/双一流", majorLib:["播音主持顶尖","新闻传播/影视/编导"]},
+  {name:"中央财经大学", prov:"北京", level:"211/双一流", majorLib:["财经顶尖","财政/金融/会计"]},
+  {name:"对外经济贸易大学", prov:"北京", level:"211/双一流", majorLib:["国贸/金融","外语+经济复合"]},
+  {name:"北京体育大学", prov:"北京", level:"211/双一流", majorLib:["体育学顶尖","运动训练/体育教育"]},
+  {name:"中国政法大学", prov:"北京", level:"211/双一流", majorLib:["法学顶尖","政治学/行政/知识产权"]},
+  {name:"华北电力大学(北京)", prov:"北京", level:"211/双一流", majorLib:["电气工程顶尖","能源动力/核工程"]},
+  {name:"中国矿业大学(北京)", prov:"北京", level:"211/双一流", majorLib:["矿业工程顶尖","安全/地质"]},
+  {name:"中国石油大学(北京)", prov:"北京", level:"211/双一流", majorLib:["石油工程顶尖","化工/地质"]},
+  {name:"中国地质大学(北京)", prov:"北京", level:"211/双一流", majorLib:["地质学顶尖","资源勘查/宝石"]},
+  {name:"首都师范大学", prov:"北京", level:"211/双一流", majorLib:["师范/文史","数学/教育学"]},
+  // ============ 天津（4所211，含2所985）============
+  {name:"南开大学", prov:"天津", level:"985/211/双一流", majorLib:["文理并重","数学/化学王牌","经济学顶尖"]},
+  {name:"天津大学", prov:"天津", level:"985/211/双一流", majorLib:["工科老牌","化工/建筑/机械/水利"]},
+  {name:"天津医科大学", prov:"天津", level:"211/双一流", majorLib:["临床医学","医学影像/公共卫生"]},
+  // ============ 河北（1所211）============
+  {name:"河北工业大学", prov:"河北", level:"211/双一流(天津办学)", majorLib:["电气工程","材料/化工"]},
+  // ============ 山西（1所211）============
+  {name:"太原理工大学", prov:"山西", level:"211/双一流", majorLib:["化学工程","机械/材料/矿业"]},
+  // ============ 内蒙古（1所211）============
+  {name:"内蒙古大学", prov:"内蒙古", level:"211/双一流", majorLib:["生物学","民族学/蒙古语言文学"]},
+  // ============ 辽宁（4所211，含2所985）============
+  {name:"大连理工大学", prov:"辽宁", level:"985/211/双一流", majorLib:["工科强校","化工/机械/船舶/土木"]},
+  {name:"东北大学", prov:"辽宁", level:"985/211/双一流", majorLib:["冶金顶尖","自动化/材料/矿业"]},
+  {name:"辽宁大学", prov:"辽宁", level:"211/双一流", majorLib:["经济/法学","文史/应用经济学"]},
+  {name:"大连海事大学", prov:"辽宁", level:"211/双一流", majorLib:["航海技术顶尖","轮机/海事法/物流"]},
+  // ============ 吉林（3所211，含1所985）============
+  {name:"吉林大学", prov:"吉林", level:"985/211/双一流", majorLib:["学科齐全","车辆/化学/考古/法学"]},
+  {name:"东北师范大学", prov:"吉林", level:"211/双一流", majorLib:["师范教育顶尖","地理/教育学/文史"]},
+  {name:"延边大学", prov:"吉林", level:"211/双一流", majorLib:["民族学","朝鲜语/外语"]},
+  // ============ 黑龙江（4所211，含1所985）============
+  {name:"哈尔滨工业大学", prov:"黑龙江", level:"985/211/C9/双一流", majorLib:["工科顶尖","航天/机械/计算机/焊接"]},
+  {name:"哈尔滨工程大学", prov:"黑龙江", level:"211/双一流", majorLib:["船舶顶尖","海洋工程/核工业/水声"]},
+  {name:"东北林业大学", prov:"黑龙江", level:"211/双一流", majorLib:["林学/林业工程","野生动物"]},
+  {name:"东北农业大学", prov:"黑龙江", level:"211/双一流", majorLib:["农学/畜牧","食品/寒地作物"]},
+  // ============ 上海（10所211，含4所985）============
+  {name:"复旦大学", prov:"上海", level:"985/211/C9/双一流", majorLib:["文理综合顶尖","新闻/经济/医学/数学"]},
+  {name:"上海交通大学", prov:"上海", level:"985/211/C9/双一流", majorLib:["工科顶尖","医学/船舶/机械/管理"]},
+  {name:"同济大学", prov:"上海", level:"985/211/双一流", majorLib:["土木/建筑顶尖","车辆/环境/城规"]},
+  {name:"华东师范大学", prov:"上海", level:"985/211/双一流", majorLib:["教育/心理","中文/地理/统计"]},
+  {name:"上海外国语大学", prov:"上海", level:"211/双一流", majorLib:["外语顶尖","小语种/翻译/国际关系"]},
+  {name:"上海财经大学", prov:"上海", level:"211/双一流", majorLib:["财经顶尖","会计/金融/统计"]},
+  {name:"华东理工大学", prov:"上海", level:"211/双一流", majorLib:["化工顶尖","生物工程/材料/制药"]},
+  {name:"上海大学", prov:"上海", level:"211/双一流", majorLib:["综合类","机械/材料/影视"]},
+  {name:"东华大学", prov:"上海", level:"211/双一流", majorLib:["纺织顶尖","服装设计/材料"]},
+  {name:"第二军医大学", prov:"上海", level:"211/军事双一流", majorLib:["军事医学","临床/药学/护理"]},
+  // ============ 江苏（11所211，含2所985）============
+  {name:"南京大学", prov:"江苏", level:"985/211/C9/双一流", majorLib:["文理综合顶尖","物理/天文/地质/中文"]},
+  {name:"东南大学", prov:"江苏", level:"985/211/双一流", majorLib:["建筑/土木顶尖","电子/通信/信息"]},
+  {name:"苏州大学", prov:"江苏", level:"211/双一流", majorLib:["综合类","材料/光学/纺织"]},
+  {name:"南京航空航天大学", prov:"江苏", level:"211/双一流", majorLib:["航空航天","力学/飞行器设计"]},
+  {name:"南京理工大学", prov:"江苏", level:"211/双一流", majorLib:["兵器/装备","光学/电子/化工"]},
+  {name:"河海大学", prov:"江苏", level:"211/双一流", majorLib:["水利顶尖","水文/港口/岩土"]},
+  {name:"南京农业大学", prov:"江苏", level:"211/双一流", majorLib:["农学/园艺","作物/畜牧/农经"]},
+  {name:"中国药科大学", prov:"江苏", level:"211/双一流", majorLib:["药学顶尖","药物制剂/中药学"]},
+  {name:"南京师范大学", prov:"江苏", level:"211/双一流", majorLib:["师范/教育","地理/文史/心理"]},
+  {name:"中国矿业大学(徐州)", prov:"江苏", level:"211/双一流", majorLib:["矿业工程","安全/地质/机械"]},
+  {name:"江南大学", prov:"江苏", level:"211/双一流", majorLib:["食品科学顶尖","轻工/发酵/纺织"]},
+  // ============ 浙江（1所211，1所特色）============
+  {name:"浙江大学", prov:"浙江", level:"985/211/C9/双一流", majorLib:["学科齐全","工科/农学/医学/管理"]},
+  {name:"浙江传媒学院", prov:"浙江", level:"普通本科(硕士授予单位)", majorLib:["传媒特色","播音/影视强","省部共建"]},
+  // ============ 安徽（2所211，含1所985）============
+  {name:"中国科学技术大学", prov:"安徽", level:"985/211/C9/双一流", majorLib:["理科顶尖","物理/数学/化学/计算机"]},
+  {name:"合肥工业大学", prov:"安徽", level:"211/双一流", majorLib:["工科综合","车辆/机械/管理"]},
+  // ============ 福建（2所211，含1所985）============
+  {name:"厦门大学", prov:"福建", level:"985/211/双一流", majorLib:["经济/管理","会计/金融/中文/化学"]},
+  {name:"福州大学", prov:"福建", level:"211/双一流", majorLib:["化学/化工","土木/机械/电气"]},
+  // ============ 江西（1所211）============
+  {name:"南昌大学", prov:"江西", level:"211/双一流", majorLib:["材料/食品","医学/管理综合"]},
+  // ============ 山东（3所211，含2所985）============
+  {name:"山东大学", prov:"山东", level:"985/211/双一流", majorLib:["文理综合","数学/中文/医学/机械"]},
+  {name:"中国海洋大学", prov:"山东", level:"985/211/双一流", majorLib:["海洋顶尖","水产/大气/海洋科学"]},
+  {name:"中国石油大学(华东)", prov:"山东", level:"211/双一流", majorLib:["石油/化工","地质/机械"]},
+  // ============ 河南（1所211）============
+  {name:"郑州大学", prov:"河南", level:"211/双一流", majorLib:["综合类","化学/材料/临床医学"]},
+  // ============ 湖北（7所211，含2所985）============
+  {name:"武汉大学", prov:"湖北", level:"985/211/双一流", majorLib:["文理综合","测绘/遥感/法学/中文"]},
+  {name:"华中科技大学", prov:"湖北", level:"985/211/双一流", majorLib:["工科/医学","机械/光电/临床"]},
+  {name:"华中师范大学", prov:"湖北", level:"211/双一流", majorLib:["师范/文史","教育学/政治学"]},
+  {name:"华中农业大学", prov:"湖北", level:"211/双一流", majorLib:["农学/生物","园艺/水产/畜牧"]},
+  {name:"武汉理工大学", prov:"湖北", level:"211/双一流", majorLib:["材料顶尖","汽车/船舶/建筑材料"]},
+  {name:"中国地质大学(武汉)", prov:"湖北", level:"211/双一流", majorLib:["地质学顶尖","资源勘查/宝石/珠宝"]},
+  {name:"中南财经政法大学", prov:"湖北", level:"211/双一流", majorLib:["财经/法学","会计/金融/法学"]},
+  // ============ 湖南（4所211，含3所985）============
+  {name:"中南大学", prov:"湖南", level:"985/211/双一流", majorLib:["冶金/材料/医学","有色金属/矿业"]},
+  {name:"湖南大学", prov:"湖南", level:"985/211/双一流", majorLib:["土木/机械","设计学/化学/金融"]},
+  {name:"国防科技大学", prov:"湖南", level:"985/211/军事双一流", majorLib:["军事工科","计算机/信息/系统工程"]},
+  {name:"湖南师范大学", prov:"湖南", level:"211/双一流", majorLib:["师范/文史","外语/教育学"]},
+  // ============ 广东（4所211，含2所985）============
+  {name:"中山大学", prov:"广东", level:"985/211/双一流", majorLib:["文理综合","医学/中文/管理/岭南"]},
+  {name:"华南理工大学", prov:"广东", level:"985/211/双一流", majorLib:["工科/建筑","轻工/食品/材料"]},
+  {name:"暨南大学", prov:"广东", level:"211/双一流", majorLib:["华侨教育","新闻/经济/中文"]},
+  {name:"华南师范大学", prov:"广东", level:"211/双一流", majorLib:["师范/心理","教育学/物理"]},
+  // ============ 广西（1所211）============
+  {name:"广西大学", prov:"广西", level:"211/双一流", majorLib:["综合类","土木/机械/农学"]},
+  // ============ 海南（1所211）============
+  {name:"海南大学", prov:"海南", level:"211/双一流", majorLib:["热带作物","法学/农学/海洋"]},
+  // ============ 重庆（2所211，含1所985）============
+  {name:"重庆大学", prov:"重庆", level:"985/211/双一流", majorLib:["工科强校","机械A+","土木建筑传统强项"]},
+  {name:"西南大学", prov:"重庆", level:"211/双一流", majorLib:["农学/师范","心理学/农业资源"]},
+  // ============ 四川（5所211，含2所985）============
+  {name:"四川大学", prov:"四川", level:"985/211/双一流", majorLib:["完整文科","理工医齐全"]},
+  {name:"电子科技大学", prov:"四川", level:"985/211/双一流", majorLib:["电子/通信顶尖","计算机/信息安全"]},
+  {name:"西南交通大学", prov:"四川", level:"211/双一流", majorLib:["交通/轨道顶尖","土木/机械/桥梁"]},
+  {name:"西南财经大学", prov:"四川", level:"211/双一流", majorLib:["财经","金融/会计/统计"]},
+  {name:"四川农业大学", prov:"四川", level:"211/双一流", majorLib:["农学/畜牧","作物/园艺/兽医"]},
+  // ============ 贵州（1所211）============
+  {name:"贵州大学", prov:"贵州", level:"211/双一流", majorLib:["综合类","农学/植物保护"]},
+  // ============ 云南（1所211）============
+  {name:"云南大学", prov:"云南", level:"211/双一流", majorLib:["民族学/生态","文史/生物"]},
+  // ============ 西藏（1所211）============
+  {name:"西藏大学", prov:"西藏", level:"211/双一流", majorLib:["民族学","高原生态/藏语言文学"]},
+  // ============ 陕西（7所211，含3所985）============
+  {name:"西安交通大学", prov:"陕西", level:"985/211/C9/双一流", majorLib:["工科顶尖","机械/电气/管理/医学"]},
+  {name:"西北工业大学", prov:"陕西", level:"985/211/双一流", majorLib:["航空航天/兵器","三航一体/材料"]},
+  {name:"西北农林科技大学", prov:"陕西", level:"985/211/双一流", majorLib:["农林顶尖","植保/水土/林学"]},
+  {name:"西安电子科技大学", prov:"陕西", level:"211/双一流", majorLib:["电子/通信","计算机/信息安全"]},
+  {name:"陕西师范大学", prov:"陕西", level:"211/双一流", majorLib:["师范/文史","中文/教育/历史"]},
+  {name:"西北大学", prov:"陕西", level:"211/双一流", majorLib:["地质/考古","文史/理论经济学"]},
+  {name:"第四军医大学", prov:"陕西", level:"211/军事双一流", majorLib:["军事医学","口腔/临床/航空医学"]},
+  // ============ 甘肃（1所211，1所985）============
+  {name:"兰州大学", prov:"甘肃", level:"985/211/双一流", majorLib:["综合类","化学/物理/大气/草学"]},
+  // ============ 青海（1所211）============
+  {name:"青海大学", prov:"青海", level:"211/双一流", majorLib:["高原农牧","高原医学/生态"]},
+  // ============ 宁夏（1所211）============
+  {name:"宁夏大学", prov:"宁夏", level:"211/双一流", majorLib:["综合类","民族学/草学"]},
+  // ============ 新疆（2所211）============
+  {name:"新疆大学", prov:"新疆", level:"211/双一流", majorLib:["综合类","化学工程/民族学"]},
+  {name:"石河子大学", prov:"新疆", level:"211/双一流", majorLib:["农学/医学","化工/兵团特色"]},
+  // ============ 独立艺术院校（八大美院 / 十一大音乐学院 / 戏剧影视舞蹈 / 民办艺术）============
+  // 北京
+  {name:"中央美术学院", prov:"北京", level:"双一流/八大美院/艺术顶尖", majorLib:["美术学顶尖","设计学A+/建筑学","造型/雕塑/实验艺术/中国画","书法/艺术史论"]},
+  {name:"中央音乐学院", prov:"北京", level:"双一流/艺术顶尖", majorLib:["音乐表演顶尖","作曲/音乐学/指挥","声乐/管弦/键盘"]},
+  {name:"中国音乐学院", prov:"北京", level:"双一流/艺术顶尖", majorLib:["中国民族音乐顶尖","声乐/中国乐器/作曲"]},
+  {name:"中央戏剧学院", prov:"北京", level:"双一流/艺术顶尖", majorLib:["表演/导演顶尖","戏剧影视文学/戏剧影视美术设计/舞蹈"]},
+  {name:"北京电影学院", prov:"北京", level:"艺术顶尖/影视第一学府", majorLib:["电影/导演/表演王牌","摄影/录音/戏剧影视文学/动画"]},
+  {name:"北京舞蹈学院", prov:"北京", level:"艺术顶尖/舞蹈最强", majorLib:["舞蹈学/舞蹈表演顶尖","舞蹈编导/舞蹈教育"]},
+  {name:"中国戏曲学院", prov:"北京", level:"艺术特色", majorLib:["戏曲表演/戏曲导演王牌","戏剧影视美术设计/京剧/戏曲文学"]},
+  {name:"北京服装学院", prov:"北京", level:"参照独立艺术招生", majorLib:["服装与服饰设计王牌","视觉传达/工业设计/珠宝设计"]},
+  {name:"北京印刷学院", prov:"北京", level:"参照独立艺术招生", majorLib:["视觉传达/数字媒体艺术","出版编辑/包装设计"]},
+  // 天津
+  {name:"天津美术学院", prov:"天津", level:"艺术顶尖", majorLib:["中国画/油画/版画","设计学/雕塑/实验艺术","书法/艺术史论"]},
+  {name:"天津音乐学院", prov:"天津", level:"艺术顶尖", majorLib:["音乐表演/作曲","声乐/乐器演奏/舞蹈"]},
+  {name:"天津工业大学", prov:"天津", level:"211/双一流/参照艺术招生", majorLib:["纺织工程顶尖","服装设计/艺术设计"]},
+  // 河北
+  {name:"河北传媒学院", prov:"河北", level:"民办传媒特色", majorLib:["播音与主持","广播电视编导/戏剧影视美术设计/表演"]},
+  {name:"河北美术学院", prov:"河北", level:"民办美术特色", majorLib:["美术学/雕塑","视觉传达/环境设计/服装设计"]},
+  // 山西
+  {name:"山西传媒学院", prov:"山西", level:"公办传媒特色", majorLib:["播音与主持","广播电视编导/摄影/传媒"]},
+  // 辽宁
+  {name:"鲁迅美术学院", prov:"辽宁", level:"艺术顶尖/八大美院", majorLib:["油画/雕塑王牌","视觉传达/环境设计/工业设计","中国画/书法"]},
+  {name:"沈阳音乐学院", prov:"辽宁", level:"艺术顶尖/十一大音乐学院", majorLib:["作曲/音乐表演","民族声乐/流行音乐/舞蹈"]},
+  {name:"大连艺术学院", prov:"辽宁", level:"民办艺术特色", majorLib:["音乐/舞蹈","戏剧影视/美术设计/传媒"]},
+  // 吉林
+  {name:"吉林艺术学院", prov:"吉林", level:"艺术特色/综合", majorLib:["综合艺术","音乐/美术/戏剧影视/舞蹈"]},
+  // 黑龙江
+  {name:"哈尔滨音乐学院", prov:"黑龙江", level:"参照独立艺术招生", majorLib:["音乐表演/作曲","声乐/管弦/中俄音乐交流"]},
+  // 上海
+  {name:"上海音乐学院", prov:"上海", level:"双一流/艺术顶尖", majorLib:["音乐表演顶尖","作曲/音乐学/指挥/流行音乐"]},
+  {name:"上海戏剧学院", prov:"上海", level:"艺术顶尖", majorLib:["表演/导演王牌","戏剧影视文学/播音/舞蹈/戏剧影视美术设计"]},
+  {name:"上海视觉艺术学院", prov:"上海", level:"艺术特色/参照艺术招生", majorLib:["视觉传达/数字媒体艺术","表演/时尚设计/文物修复"]},
+  // 江苏
+  {name:"南京艺术学院", prov:"江苏", level:"艺术顶尖/综合艺术强校", majorLib:["音乐/美术/设计全覆盖","传媒/舞蹈/戏剧影视","书法/艺术史论/国画"]},
+  {name:"南京传媒学院", prov:"江苏", level:"民办传媒特色", majorLib:["播音与主持","广播电视编导/传媒/摄影"]},
+  // 浙江
+  {name:"中国美术学院", prov:"浙江", level:"双一流/八大美院/艺术顶尖", majorLib:["美术学顶尖","设计学A+/建筑学","国画/书法/艺术史论/雕塑"]},
+  {name:"浙江音乐学院", prov:"浙江", level:"参照独立艺术招生", majorLib:["音乐表演/作曲","声乐/民乐/舞蹈编导"]},
+  {name:"浙江理工大学", prov:"浙江", level:"参照艺术招生", majorLib:["服装设计王牌","纺织/艺术设计"]},
+  // 江西
+  {name:"景德镇陶瓷大学", prov:"江西", level:"艺术特色/陶瓷顶尖", majorLib:["陶瓷艺术设计顶尖","设计学/雕塑/材料艺术"]},
+  {name:"江西服装学院", prov:"江西", level:"民办艺术特色", majorLib:["服装与服饰设计","视觉传达/表演"]},
+  // 山东
+  {name:"山东艺术学院", prov:"山东", level:"艺术特色/综合", majorLib:["综合艺术","音乐/美术/戏剧影视/舞蹈","书法/戏曲/国画"]},
+  {name:"山东工艺美术学院", prov:"山东", level:"艺术特色/设计强校", majorLib:["设计学王牌","视觉传达/工业设计/环境设计"]},
+  // 湖北
+  {name:"湖北美术学院", prov:"湖北", level:"艺术顶尖/八大美院", majorLib:["水彩/漆艺特色","美术学/设计学/雕塑","中国画/书法"]},
+  {name:"武汉音乐学院", prov:"湖北", level:"艺术顶尖/十一大音乐学院", majorLib:["音乐表演/作曲","中国乐器/舞蹈"]},
+  {name:"武汉传媒学院", prov:"湖北", level:"民办传媒特色", majorLib:["播音与主持","广播电视编导/戏剧影视/传媒"]},
+  {name:"武汉设计工程学院", prov:"湖北", level:"民办艺术特色/参照艺术招生", majorLib:["表演/播音","戏剧影视美术设计"]},
+  // 广东
+  {name:"广州美术学院", prov:"广东", level:"艺术顶尖/八大美院", majorLib:["岭南美术特色","设计学/工业设计/建筑学","中国画/书法/雕塑"]},
+  {name:"星海音乐学院", prov:"广东", level:"艺术顶尖/十一大音乐学院", majorLib:["音乐表演/作曲","流行音乐/舞蹈"]},
+  // 广西
+  {name:"广西艺术学院", prov:"广西", level:"艺术特色/综合", majorLib:["综合艺术","民族音乐/美术/舞蹈/戏剧影视"]},
+  {name:"北海艺术设计学院", prov:"广西", level:"民办艺术特色", majorLib:["视觉传达/环境设计","服装/工业设计"]},
+  // 重庆
+  {name:"四川美术学院", prov:"重庆", level:"艺术顶尖/八大美院", majorLib:["油画/雕塑王牌","设计学/新媒体艺术/影视","中国画/书法"]},
+  // 四川
+  {name:"四川音乐学院", prov:"四川", level:"艺术顶尖/十一大音乐学院", majorLib:["音乐表演/作曲","流行音乐/戏剧影视/舞蹈"]},
+  {name:"四川传媒学院", prov:"四川", level:"民办传媒特色", majorLib:["播音与主持","广播电视编导/戏剧影视/摄影"]},
+  {name:"四川文化艺术学院", prov:"四川", level:"民办艺术特色", majorLib:["美术/设计","音乐/戏剧影视"]},
+  // 云南
+  {name:"云南艺术学院", prov:"云南", level:"艺术特色/综合", majorLib:["综合艺术","民族音乐/美术/舞蹈"]},
+  {name:"云南艺术学院文华学院", prov:"云南", level:"民办艺术特色", majorLib:["音乐/美术","戏剧影视/舞蹈"]},
+  // 内蒙古
+  {name:"内蒙古艺术学院", prov:"内蒙古", level:"参照独立艺术招生", majorLib:["民族音乐/舞蹈王牌","美术/戏剧影视"]},
+  // 陕西
+  {name:"西安美术学院", prov:"陕西", level:"艺术顶尖/八大美院", majorLib:["中国画/雕塑","美术学/设计学/文物修复","书法/艺术史论"]},
+  {name:"西安音乐学院", prov:"陕西", level:"艺术顶尖/十一大音乐学院", majorLib:["音乐表演/作曲","民族音乐/舞蹈"]},
+  // 新疆
+  {name:"新疆艺术学院", prov:"新疆", level:"艺术特色/综合", majorLib:["综合艺术","民族音乐/美术/舞蹈"]},
+  // 安徽
+  {name:"安徽艺术学院", prov:"安徽", level:"公办艺术本科", majorLib:["综合艺术","音乐/美术/戏剧影视/舞蹈"]},
+  // ============ 双非公办 / 民办 / 中外合办 ============
+  // 北京
+  {name:"首都医科大学", prov:"北京", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"北京语言大学", prov:"北京", level:"双非公办/外语", majorLib:["英语/翻译/多语种","国际经贸/新闻传播"]},
+  {name:"首都经济贸易大学", prov:"北京", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"北京第二外国语学院", prov:"北京", level:"双非公办/外语", majorLib:["英语/翻译/多语种","国际经贸/新闻传播"]},
+  {name:"北京工商大学", prov:"北京", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"北方工业大学", prov:"北京", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"北京建筑大学", prov:"北京", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"北京农学院", prov:"北京", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"北京物资学院", prov:"北京", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"中国劳动关系学院", prov:"北京", level:"双非公办/特色", majorLib:["行业特色专业","法学/管理/外语"]},
+  {name:"中国消防救援学院", prov:"北京", level:"双非公办/应急", majorLib:["安全工程/应急管理","消防/防灾减灾"]},
+  {name:"北京电子科技学院", prov:"北京", level:"双非公办/特色", majorLib:["行业特色专业","法学/管理/外语"]},
+  {name:"国际关系学院", prov:"北京", level:"双非公办/特色", majorLib:["行业特色专业","法学/管理/外语"]},
+  {name:"中国青年政治学院", prov:"北京", level:"双非公办/特色", majorLib:["行业特色专业","法学/管理/外语"]},
+  {name:"中华女子学院", prov:"北京", level:"双非公办/特色", majorLib:["行业特色专业","法学/管理/外语"]},
+  {name:"中国社会科学院大学", prov:"北京", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"北京城市学院", prov:"北京", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 天津
+  {name:"天津师范大学", prov:"天津", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"天津理工大学", prov:"天津", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"天津外国语大学", prov:"天津", level:"双非公办/外语", majorLib:["英语/翻译/多语种","国际经贸/新闻传播"]},
+  {name:"天津中医药大学", prov:"天津", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"天津农学院", prov:"天津", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"天津城建大学", prov:"天津", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"天津体育学院", prov:"天津", level:"双非公办/体育", majorLib:["体育教育/运动训练","社会体育/民族传统体育"]},
+  {name:"天津天狮学院", prov:"天津", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 河北
+  {name:"燕山大学", prov:"河北", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"石家庄铁道大学", prov:"河北", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"河北大学", prov:"河北", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"河北师范大学", prov:"河北", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"河北医科大学", prov:"河北", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"河北科技大学", prov:"河北", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"河北经贸大学", prov:"河北", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"河北地质大学", prov:"河北", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"河北工程大学", prov:"河北", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"河北建筑工程学院", prov:"河北", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"唐山学院", prov:"河北", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"邢台学院", prov:"河北", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"沧州师范学院", prov:"河北", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"廊坊师范学院", prov:"河北", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"承德医学院", prov:"河北", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"张家口学院", prov:"河北", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"河北北方学院", prov:"河北", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"防灾科技学院", prov:"河北", level:"双非公办/应急", majorLib:["安全工程/应急管理","消防/防灾减灾"]},
+  {name:"应急管理大学", prov:"河北", level:"双非公办/应急", majorLib:["安全工程/应急管理","消防/防灾减灾"]},
+  {name:"河北体育学院", prov:"河北", level:"双非公办/体育", majorLib:["体育教育/运动训练","社会体育/民族传统体育"]},
+  {name:"河北科技学院", prov:"河北", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"燕京理工学院", prov:"河北", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 山西
+  {name:"山西大学", prov:"山西", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"太原科技大学", prov:"山西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"山西师范大学", prov:"山西", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"山西财经大学", prov:"山西", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"山西医科大学", prov:"山西", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"中北大学", prov:"山西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"长治医学院", prov:"山西", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"运城学院", prov:"山西", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"忻州师范学院", prov:"山西", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"太原师范学院", prov:"山西", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"山西中医药大学", prov:"山西", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"山西警察学院", prov:"山西", level:"双非公办/警察", majorLib:["治安/侦查/刑科","法学/警务指挥"]},
+  {name:"山西工商学院", prov:"山西", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 内蒙古
+  {name:"内蒙古工业大学", prov:"内蒙古", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"内蒙古师范大学", prov:"内蒙古", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"内蒙古医科大学", prov:"内蒙古", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"内蒙古财经大学", prov:"内蒙古", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"内蒙古农业大学", prov:"内蒙古", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"赤峰学院", prov:"内蒙古", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"呼伦贝尔学院", prov:"内蒙古", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"集宁师范学院", prov:"内蒙古", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  // 辽宁
+  {name:"沈阳大学", prov:"辽宁", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"沈阳师范大学", prov:"辽宁", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"辽宁科技大学", prov:"辽宁", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"辽宁工程技术大学", prov:"辽宁", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"辽宁石油化工大学", prov:"辽宁", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"锦州医科大学", prov:"辽宁", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"辽宁中医药大学", prov:"辽宁", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"沈阳药科大学", prov:"辽宁", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"大连大学", prov:"辽宁", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"大连外国语大学", prov:"辽宁", level:"双非公办/外语", majorLib:["英语/翻译/多语种","国际经贸/新闻传播"]},
+  {name:"辽宁师范大学", prov:"辽宁", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"渤海大学", prov:"辽宁", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"沈阳体育学院", prov:"辽宁", level:"双非公办/体育", majorLib:["体育教育/运动训练","社会体育/民族传统体育"]},
+  {name:"辽宁财贸学院", prov:"辽宁", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 吉林
+  {name:"长春工业大学", prov:"吉林", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"长春师范大学", prov:"吉林", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"吉林财经大学", prov:"吉林", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"吉林医药学院", prov:"吉林", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"北华大学", prov:"吉林", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"吉林师范大学", prov:"吉林", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"通化师范学院", prov:"吉林", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"白城师范学院", prov:"吉林", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"吉林体育学院", prov:"吉林", level:"双非公办/体育", majorLib:["体育教育/运动训练","社会体育/民族传统体育"]},
+  {name:"吉林外国语大学", prov:"吉林", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 黑龙江
+  {name:"黑龙江大学", prov:"黑龙江", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"哈尔滨理工大学", prov:"黑龙江", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"黑龙江中医药大学", prov:"黑龙江", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"齐齐哈尔大学", prov:"黑龙江", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"牡丹江师范学院", prov:"黑龙江", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"佳木斯大学", prov:"黑龙江", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"大庆师范学院", prov:"黑龙江", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"哈尔滨体育学院", prov:"黑龙江", level:"双非公办/体育", majorLib:["体育教育/运动训练","社会体育/民族传统体育"]},
+  {name:"黑龙江八一农垦大学", prov:"黑龙江", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"黑龙江东方学院", prov:"黑龙江", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"黑龙江外国语学院", prov:"黑龙江", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 上海
+  {name:"上海师范大学", prov:"上海", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"上海理工大学", prov:"上海", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"上海海事大学", prov:"上海", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"上海电力大学", prov:"上海", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"上海对外经贸大学", prov:"上海", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"上海立信会计金融学院", prov:"上海", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"上海政法学院", prov:"上海", level:"双非公办/政法", majorLib:["法学/侦查/监狱学","公共管理/知识产权"]},
+  {name:"上海健康医学院", prov:"上海", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"上海体育学院", prov:"上海", level:"双非公办/体育", majorLib:["体育教育/运动训练","社会体育/民族传统体育"]},
+  {name:"上海建桥学院", prov:"上海", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"上海杉达学院", prov:"上海", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"上海立达学院", prov:"上海", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"上海纽约大学", prov:"上海", level:"中外合作办学", majorLib:["国际化专业/双学位","经管/工科/理学"]},
+  // 江苏
+  {name:"扬州大学", prov:"江苏", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"南京工业大学", prov:"江苏", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"江苏大学", prov:"江苏", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"南通大学", prov:"江苏", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"江苏师范大学", prov:"江苏", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"常州大学", prov:"江苏", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"南京审计大学", prov:"江苏", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"苏州科技大学", prov:"江苏", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"淮海工学院", prov:"江苏", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"盐城师范学院", prov:"江苏", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"淮阴师范学院", prov:"江苏", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"江苏理工学院", prov:"江苏", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"南京晓庄学院", prov:"江苏", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"徐州医科大学", prov:"江苏", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"南京体育学院", prov:"江苏", level:"双非公办/体育", majorLib:["体育教育/运动训练","社会体育/民族传统体育"]},
+  {name:"三江学院", prov:"江苏", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"无锡太湖学院", prov:"江苏", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"西交利物浦大学", prov:"江苏", level:"中外合作办学", majorLib:["国际化专业/双学位","经管/工科/理学"]},
+  {name:"昆山杜克大学", prov:"江苏", level:"中外合作办学", majorLib:["国际化专业/双学位","经管/工科/理学"]},
+  // 浙江
+  {name:"浙江工业大学", prov:"浙江", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"浙江师范大学", prov:"浙江", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"杭州师范大学", prov:"浙江", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"宁波大学", prov:"浙江", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"浙江工商大学", prov:"浙江", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"温州大学", prov:"浙江", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"浙江中医药大学", prov:"浙江", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"湖州师范学院", prov:"浙江", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"绍兴文理学院", prov:"浙江", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"台州学院", prov:"浙江", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"丽水学院", prov:"浙江", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"浙江海洋大学", prov:"浙江", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"杭州医学院", prov:"浙江", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"浙江树人学院", prov:"浙江", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"浙江越秀外国语学院", prov:"浙江", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"宁波诺丁汉大学", prov:"浙江", level:"中外合作办学", majorLib:["国际化专业/双学位","经管/工科/理学"]},
+  {name:"温州肯恩大学", prov:"浙江", level:"中外合作办学", majorLib:["国际化专业/双学位","经管/工科/理学"]},
+  // 安徽
+  {name:"安徽师范大学", prov:"安徽", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"安徽理工大学", prov:"安徽", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"安徽工业大学", prov:"安徽", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"安徽农业大学", prov:"安徽", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"安徽医科大学", prov:"安徽", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"淮北师范大学", prov:"安徽", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"安庆师范大学", prov:"安徽", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"阜阳师范大学", prov:"安徽", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"皖西学院", prov:"安徽", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"滁州学院", prov:"安徽", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"黄山学院", prov:"安徽", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"安徽中医药大学", prov:"安徽", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"合肥学院", prov:"安徽", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"安徽建筑大学", prov:"安徽", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"安徽新华学院", prov:"安徽", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"安徽外国语学院", prov:"安徽", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 福建
+  {name:"华侨大学", prov:"福建", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"福建农林大学", prov:"福建", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"福建师范大学", prov:"福建", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"集美大学", prov:"福建", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"闽南师范大学", prov:"福建", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"泉州师范学院", prov:"福建", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"厦门理工学院", prov:"福建", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"福建医科大学", prov:"福建", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"福建中医药大学", prov:"福建", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"仰恩大学", prov:"福建", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"闽南理工学院", prov:"福建", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"福州外语外贸学院", prov:"福建", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 江西
+  {name:"江西师范大学", prov:"江西", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"江西财经大学", prov:"江西", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"华东交通大学", prov:"江西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"南昌航空大学", prov:"江西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"东华理工大学", prov:"江西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"江西理工大学", prov:"江西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"赣南师范大学", prov:"江西", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"井冈山大学", prov:"江西", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"宜春学院", prov:"江西", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"九江学院", prov:"江西", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"江西中医药大学", prov:"江西", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"南昌医学院", prov:"江西", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"南昌理工学院", prov:"江西", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"江西财经大学现代经济管理学院", prov:"江西", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 山东
+  {name:"山东师范大学", prov:"山东", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"山东科技大学", prov:"山东", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"山东理工大学", prov:"山东", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"青岛大学", prov:"山东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"济南大学", prov:"山东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"烟台大学", prov:"山东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"曲阜师范大学", prov:"山东", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"聊城大学", prov:"山东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"鲁东大学", prov:"山东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"临沂大学", prov:"山东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"潍坊医学院", prov:"山东", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"滨州医学院", prov:"山东", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"济宁医学院", prov:"山东", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"山东中医药大学", prov:"山东", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"山东政法学院", prov:"山东", level:"双非公办/政法", majorLib:["法学/侦查/监狱学","公共管理/知识产权"]},
+  {name:"山东体育学院", prov:"山东", level:"双非公办/体育", majorLib:["体育教育/运动训练","社会体育/民族传统体育"]},
+  {name:"潍坊科技学院", prov:"山东", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"山东协和学院", prov:"山东", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"齐鲁理工学院", prov:"山东", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 河南
+  {name:"河南师范大学", prov:"河南", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"河南科技大学", prov:"河南", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"河南理工大学", prov:"河南", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"河南工业大学", prov:"河南", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"河南财经政法大学", prov:"河南", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"新乡医学院", prov:"河南", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"河南中医药大学", prov:"河南", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"洛阳师范学院", prov:"河南", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"安阳师范学院", prov:"河南", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"南阳师范学院", prov:"河南", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"商丘师范学院", prov:"河南", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"郑州轻工业大学", prov:"河南", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"华北水利水电大学", prov:"河南", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"河南城建学院", prov:"河南", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"郑州工商学院", prov:"河南", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 湖北
+  {name:"武汉科技大学", prov:"湖北", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"湖北师范大学", prov:"湖北", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"湖北工业大学", prov:"湖北", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"武汉纺织大学", prov:"湖北", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"江汉大学", prov:"湖北", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"三峡大学", prov:"湖北", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"长江大学", prov:"湖北", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"湖北中医药大学", prov:"湖北", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"武汉轻工大学", prov:"湖北", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"黄冈师范学院", prov:"湖北", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"湖北文理学院", prov:"湖北", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"湖北理工学院", prov:"湖北", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"湖北经济学院", prov:"湖北", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"武汉体育学院", prov:"湖北", level:"双非公办/体育", majorLib:["体育教育/运动训练","社会体育/民族传统体育"]},
+  {name:"武汉东湖学院", prov:"湖北", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 湖南
+  {name:"湖南农业大学", prov:"湖南", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"湖南科技大学", prov:"湖南", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"南华大学", prov:"湖南", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"湖南理工学院", prov:"湖南", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"湖南文理学院", prov:"湖南", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"湖南城市学院", prov:"湖南", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"湖南第一师范学院", prov:"湖南", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"衡阳师范学院", prov:"湖南", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"湘南学院", prov:"湖南", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"湖南中医药大学", prov:"湖南", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"湖南工商大学", prov:"湖南", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"湖南财政经济学院", prov:"湖南", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"湖南工业大学", prov:"湖南", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"湖南涉外经济学院", prov:"湖南", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"长沙医学院", prov:"湖南", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 广东
+  {name:"深圳大学", prov:"广东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"广州大学", prov:"广东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"广东工业大学", prov:"广东", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"广东外语外贸大学", prov:"广东", level:"双非公办/外语", majorLib:["英语/翻译/多语种","国际经贸/新闻传播"]},
+  {name:"广州医科大学", prov:"广东", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"广东财经大学", prov:"广东", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"五邑大学", prov:"广东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"惠州学院", prov:"广东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"韶关学院", prov:"广东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"肇庆学院", prov:"广东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"嘉应学院", prov:"广东", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"韩山师范学院", prov:"广东", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"岭南师范学院", prov:"广东", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"仲恺农业工程学院", prov:"广东", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"广东海洋大学", prov:"广东", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"广州体育学院", prov:"广东", level:"双非公办/体育", majorLib:["体育教育/运动训练","社会体育/民族传统体育"]},
+  {name:"南方医科大学", prov:"广东", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"广东白云学院", prov:"广东", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"广东东软学院", prov:"广东", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"广州商学院", prov:"广东", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  {name:"香港中文大学(深圳)", prov:"广东", level:"中外合作办学", majorLib:["国际化专业/双学位","经管/工科/理学"]},
+  {name:"北京师范大学-香港浸会大学联合国际学院", prov:"广东", level:"中外合作办学", majorLib:["国际化专业/双学位","经管/工科/理学"]},
+  // 广西
+  {name:"广西师范大学", prov:"广西", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"桂林电子科技大学", prov:"广西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"广西民族大学", prov:"广西", level:"双非公办/民族", majorLib:["民族学/少数民族语言","法学/文学/经济"]},
+  {name:"桂林理工大学", prov:"广西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"右江民族医学院", prov:"广西", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"广西中医药大学", prov:"广西", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"南宁师范大学", prov:"广西", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"玉林师范学院", prov:"广西", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"梧州学院", prov:"广西", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"广西科技大学", prov:"广西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  // 海南
+  {name:"海南师范大学", prov:"海南", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"海南医学院", prov:"海南", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"琼台师范学院", prov:"海南", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  // 重庆
+  {name:"重庆师范大学", prov:"重庆", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"重庆理工大学", prov:"重庆", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"重庆交通大学", prov:"重庆", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"重庆邮电大学", prov:"重庆", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"重庆医科大学", prov:"重庆", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"长江师范学院", prov:"重庆", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"重庆文理学院", prov:"重庆", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"重庆三峡学院", prov:"重庆", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"四川外国语大学", prov:"重庆", level:"双非公办/外语", majorLib:["英语/翻译/多语种","国际经贸/新闻传播"]},
+  {name:"重庆科技学院", prov:"重庆", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  // 四川
+  {name:"成都大学", prov:"四川", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"四川师范大学", prov:"四川", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"西华大学", prov:"四川", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"西华师范大学", prov:"四川", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"成都理工大学", prov:"四川", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"西南科技大学", prov:"四川", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"成都中医药大学", prov:"四川", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"川北医学院", prov:"四川", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"西南医科大学", prov:"四川", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"成都医学院", prov:"四川", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"四川轻化工大学", prov:"四川", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"绵阳师范学院", prov:"四川", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"内江师范学院", prov:"四川", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"成都体育学院", prov:"四川", level:"双非公办/体育", majorLib:["体育教育/运动训练","社会体育/民族传统体育"]},
+  {name:"成都文理学院", prov:"四川", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 贵州
+  {name:"贵州师范大学", prov:"贵州", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"贵州医科大学", prov:"贵州", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"遵义医科大学", prov:"贵州", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"贵州财经大学", prov:"贵州", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"贵州民族大学", prov:"贵州", level:"双非公办/民族", majorLib:["民族学/少数民族语言","法学/文学/经济"]},
+  {name:"黔南民族师范学院", prov:"贵州", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"遵义师范学院", prov:"贵州", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"贵州理工学院", prov:"贵州", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  // 云南
+  {name:"云南师范大学", prov:"云南", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"云南民族大学", prov:"云南", level:"双非公办/民族", majorLib:["民族学/少数民族语言","法学/文学/经济"]},
+  {name:"云南财经大学", prov:"云南", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"昆明理工大学", prov:"云南", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"大理大学", prov:"云南", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"玉溪师范学院", prov:"云南", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"曲靖师范学院", prov:"云南", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"云南中医药大学", prov:"云南", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"云南农业大学", prov:"云南", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"云南经济管理学院", prov:"云南", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 西藏
+  {name:"西藏民族大学", prov:"西藏", level:"双非公办/民族", majorLib:["民族学/少数民族语言","法学/文学/经济"]},
+  {name:"西藏农牧学院", prov:"西藏", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"西藏藏医药大学", prov:"西藏", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  // 陕西
+  {name:"西安建筑科技大学", prov:"陕西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"西安科技大学", prov:"陕西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"西安理工大学", prov:"陕西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"西安外国语大学", prov:"陕西", level:"双非公办/外语", majorLib:["英语/翻译/多语种","国际经贸/新闻传播"]},
+  {name:"西安邮电大学", prov:"陕西", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"陕西理工大学", prov:"陕西", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"宝鸡文理学院", prov:"陕西", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"咸阳师范学院", prov:"陕西", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"渭南师范学院", prov:"陕西", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"延安大学", prov:"陕西", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"榆林学院", prov:"陕西", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"西安医学院", prov:"陕西", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"陕西中医药大学", prov:"陕西", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"西安体育学院", prov:"陕西", level:"双非公办/体育", majorLib:["体育教育/运动训练","社会体育/民族传统体育"]},
+  {name:"西安欧亚学院", prov:"陕西", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 甘肃
+  {name:"西北师范大学", prov:"甘肃", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"甘肃政法大学", prov:"甘肃", level:"双非公办/政法", majorLib:["法学/侦查/监狱学","公共管理/知识产权"]},
+  {name:"兰州理工大学", prov:"甘肃", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"兰州交通大学", prov:"甘肃", level:"双非公办/理工", majorLib:["机械/材料/自动化","计算机/电子/化工"]},
+  {name:"甘肃农业大学", prov:"甘肃", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"西北民族大学", prov:"甘肃", level:"双非公办/民族", majorLib:["民族学/少数民族语言","法学/文学/经济"]},
+  {name:"天水师范学院", prov:"甘肃", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"河西学院", prov:"甘肃", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"陇东学院", prov:"甘肃", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"甘肃医学院", prov:"甘肃", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  // 青海
+  {name:"青海师范大学", prov:"青海", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"青海民族大学", prov:"青海", level:"双非公办/民族", majorLib:["民族学/少数民族语言","法学/文学/经济"]},
+  // 宁夏
+  {name:"宁夏师范学院", prov:"宁夏", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"北方民族大学", prov:"宁夏", level:"双非公办/民族", majorLib:["民族学/少数民族语言","法学/文学/经济"]},
+  {name:"宁夏医科大学", prov:"宁夏", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"银川能源学院", prov:"宁夏", level:"民办本科", majorLib:["管理/会计/计算机","设计/传媒/外语"]},
+  // 新疆
+  {name:"新疆师范大学", prov:"新疆", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"新疆财经大学", prov:"新疆", level:"双非公办/财经", majorLib:["经济学/金融/会计","工商管理/统计"]},
+  {name:"新疆农业大学", prov:"新疆", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"塔里木大学", prov:"新疆", level:"双非公办/农林", majorLib:["农学/林学/园艺","动物/水产/食品"]},
+  {name:"喀什大学", prov:"新疆", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]},
+  {name:"伊犁师范大学", prov:"新疆", level:"双非公办/师范", majorLib:["教育学/心理学/学科教育","汉语言/数学/英语师范"]},
+  {name:"新疆医科大学", prov:"新疆", level:"双非公办/医药", majorLib:["临床医学/口腔/影像","药学/护理/预防"]},
+  {name:"昌吉学院", prov:"新疆", level:"双非公办/综合", majorLib:["文理综合","经管/法学/教育"]}
+];
+
+const artsMajor = {
+  // ===== 1. 哲学类 =====
+  "哲学": {
+    category: "哲学类",
+    course: "西方哲学史、中国哲学史、逻辑学、伦理学、美学",
+    advantage: "考公党政、党校岗位适配；思辨能力强，考研跨考选择多；适合体制文职、宣传岗",
+    disadvantage: "对口就业极少，企业几乎无岗位；薪资普遍偏低；专业性强，转行门槛高",
+    job: "党校教师、宣传部门公务员、出版社编辑、考研深造"
+  },
+  "逻辑学": {
+    category: "哲学类",
+    course: "数理逻辑、形式逻辑、哲学导论、分析哲学",
+    advantage: "逻辑思维突出，考公行测优势大；可转法律、计算机、人工智能",
+    disadvantage: "开设院校少，就业面极窄；市场对口岗位稀缺",
+    job: "教育科研、公考、互联网产品逻辑策划"
+  },
+
+  // ===== 2. 经济学类 =====
+  "经济学": {
+    category: "经济学类",
+    course: "微观经济学、宏观经济学、计量经济学、财政学、货币银行学",
+    advantage: "适配银行、国企、财政局、统计局；考公岗位海量；行业覆盖面广",
+    disadvantage: "本科理论偏空，无实操技能；高端岗位要求硕士；基层岗位竞争内卷严重",
+    job: "银行柜员、政企财务、统计局、金融销售、经济研究员"
+  },
+  "金融学": {
+    category: "经济学类",
+    course: "货币金融、证券投资、公司金融、保险学、金融市场",
+    advantage: "金融行业核心专业，券商、银行、基金优先招录；薪资上限高",
+    disadvantage: "头部企业极度看重名校+证书；基层销售压力大；市场波动影响就业",
+    job: "银行、证券客户经理、保险、投融资、国企风控"
+  },
+  "国际经济与贸易": {
+    category: "经济学类",
+    course: "国际贸易实务、外贸函电、报关、国际结算、跨境电商",
+    advantage: "跨境电商、进出口企业刚需；外语复合，外贸岗位多",
+    disadvantage: "外贸受国际局势影响大；基础岗位底薪低；可替代性强",
+    job: "外贸业务员、报关员、跨境运营、国际商务专员"
+  },
+  "财政学": {
+    category: "经济学类",
+    course: "税收学、政府预算、公共财政、税务筹划",
+    advantage: "税务局、财政局定向招录，考公优势极强；国企财务、税务所适配",
+    disadvantage: "体制外就业选择少；发展高度依赖考公/考证",
+    job: "税务公务员、企业税务会计、事务所税务筹划"
+  },
+  "保险学": {
+    category: "经济学类",
+    course: "人身保险、财产保险、精算基础、风险管理",
+    advantage: "保险公司核心岗，风控、核保稳定；理赔、内勤需求持续",
+    disadvantage: "大量岗位是保险销售，业绩压力大；大众行业偏见较重",
+    job: "保险核保、理赔专员、精算助理、保险内勤"
+  },
+
+  // ===== 3. 法学类 =====
+  "法学": {
+    category: "法学类",
+    course: "民法、刑法、行政法、民事诉讼法",
+    advantage: "法院检察院司法局对口、律师行业、国企法务刚需、考公热门",
+    disadvantage: "法考难度极高、基层律所薪资低、前期成长周期长",
+    job: "律师、法官助理、法务、公安岗"
+  },
+  "知识产权": {
+    category: "法学类",
+    course: "专利法、商标法、著作权法、知识产权实务",
+    advantage: "互联网、科技企业刚需；法院知识产权庭专属岗位，竞争小于普通法学",
+    disadvantage: "岗位集中一二线城市；需要同时懂法律+技术，门槛偏高",
+    job: "企业知识产权专员、专利代理人、法院知产岗、律所知产律师"
+  },
+  "社会学": {
+    category: "法学类",
+    course: "社会调查、社会心理学、城乡社会学、社会统计学",
+    advantage: "民政局、街道办、市场调研公司适配；考公基层岗竞争小",
+    disadvantage: "对口高薪岗位少；企业认可度低，大多只能做文职调研",
+    job: "社区基层、市场调研员、民政系统公务员、社工"
+  },
+  "社会工作": {
+    category: "法学类",
+    course: "个案工作、社区工作、社会福利、心理咨询基础",
+    advantage: "民政局、社区、公益机构大量招人；考三支一扶、社区编制友好",
+    disadvantage: "薪资普遍偏低；工作繁琐，加班多；社会认可度一般",
+    job: "社区工作者、公益组织、民政事业单位、青少年辅导"
+  },
+  "治安学": {
+    category: "法学类",
+    course: "治安管理、刑事侦查、公共安全、法律法规",
+    advantage: "公安系统定向招录，入警率高；体制稳定，福利完善",
+    disadvantage: "岗位多基层派出所，值班频繁；工作强度大，晋升慢",
+    job: "基层民警、公安辅警、治安管理岗、监狱管理"
+  },
+
+  // ===== 4. 教育学类 =====
+  "小学教育": {
+    category: "教育学类",
+    course: "小学语文/数学教法、儿童心理学、班级管理",
+    advantage: "各地小学教师编制刚需，招录人数多；工作稳定，寒暑假完整",
+    disadvantage: "一线城市考编内卷严重；薪资涨幅缓慢；班主任事务繁杂",
+    job: "公办小学教师、教育机构教研、托管机构负责人"
+  },
+  "学前教育": {
+    category: "教育学类",
+    course: "幼儿心理学、舞蹈、绘画、幼儿活动设计",
+    advantage: "幼儿园编制缺口大，女生就业友好；早教行业需求稳定",
+    disadvantage: "薪资普遍偏低；看护责任重，身心消耗大；社会认可度不高",
+    job: "公办幼儿园教师、早教机构、少儿艺术老师"
+  },
+  "教育技术学": {
+    category: "教育学类",
+    course: "多媒体教学、教学设计、视频剪辑、线上教育开发",
+    advantage: "线上教育、学校电教中心、教育新媒体适配，兼具文科+新媒体技能",
+    disadvantage: "定位尴尬，不如计算机硬核、不如纯师范好考编；岗位杂",
+    job: "学校电教老师、网课编导、教育新媒体运营、培训机构课件制作"
+  },
+  "特殊教育": {
+    category: "教育学类",
+    course: "特殊儿童心理学、手语、特殊教育教法",
+    advantage: "特教编制竞争极小，政策扶持力度大；岗位稳定补贴高",
+    disadvantage: "工作心理压力大；对口岗位仅限特殊学校，选择范围窄",
+    job: "特殊学校教师、残联、儿童康复机构"
+  },
+
+  // ===== 5. 文学类 =====
+  "汉语言文学": {
+    category: "文学类",
+    course: "古代汉语、现当代文学、写作、文学理论",
+    advantage: "考公岗位多、教师编制好考、适配新媒体行政、考研难度低",
+    disadvantage: "无硬核技术、薪资上限低、就业竞争大、互联网技术岗硬门槛较高",
+    job: "语文教师、公务员、编辑、新媒体运营"
+  },
+  "网络与新媒体": {
+    category: "文学类",
+    course: "新媒体写作、短视频运营、传播学、图文策划",
+    advantage: "互联网全行业通用，短视频、品牌宣传刚需；实习岗位多，入行门槛低",
+    disadvantage: "行业内卷严重，基础运营薪资低；加班常态化，更新迭代快",
+    job: "短视频编导、公众号运营、品牌文案、自媒体策划"
+  },
+  "广告学": {
+    category: "文学类",
+    course: "广告策划、平面文案、品牌营销、影视广告",
+    advantage: "传媒、品牌公司需求大，创意岗位有趣；就业城市集中一二线",
+    disadvantage: "乙方加班严重；创意岗位淘汰快，30岁后转型压力大",
+    job: "广告策划、品牌文案、新媒体广告、短视频创意"
+  },
+  "翻译": {
+    category: "文学类",
+    course: "笔译、口译、商务谈判、跨境沟通",
+    advantage: "外贸、涉外企业、外事办刚需；可自由接单做兼职翻译",
+    disadvantage: "纯语言无复合技能薪资上限低；机器翻译冲击基础笔译岗位",
+    job: "外事专员、跨境翻译、培训机构讲师、涉外商务"
+  },
+  "历史学": {
+    category: "文学类",
+    course: "中国通史、世界史、考古概论、史料整理",
+    advantage: "博物馆、文旅局、历史教师编制对口；考公文旅岗竞争小",
+    disadvantage: "企业几乎无对口岗位；高薪极少，大多依赖体制",
+    job: "中学历史教师、博物馆讲解员、文旅局公务员、古籍整理"
+  },
+
+  // ===== 6. 管理学类 =====
+  "工商管理": {
+    category: "管理学类",
+    course: "管理学、市场营销、人力资源、企业管理",
+    advantage: "适配几乎所有企业行政、管理岗；转行灵活，不限制行业",
+    disadvantage: "本科学习宽泛无专精，没有不可替代技能；应届生很难直接做管理",
+    job: "企业行政、储备干部、人事专员、门店管理"
+  },
+  "人力资源管理": {
+    category: "管理学类",
+    course: "招聘、薪酬绩效、劳动关系、员工培训",
+    advantage: "每家企业必备岗位，女性就业友好；工作环境稳定，少出差",
+    disadvantage: "基础人事岗位薪资低；晋升HRM/HRD门槛高，内卷严重",
+    job: "招聘专员、薪酬绩效、企业人事、事业单位政工"
+  },
+  "市场营销": {
+    category: "管理学类",
+    course: "市场调研、品牌推广、销售管理、消费者行为",
+    advantage: "就业面极广，各行各业都招销售/市场；能力强者收入无上限",
+    disadvantage: "大量岗位带销售业绩指标，压力大；底薪普遍较低",
+    job: "品牌推广、渠道销售、市场策划、电商运营"
+  },
+  "旅游管理": {
+    category: "管理学类",
+    course: "旅游规划、酒店管理、导游实务、文旅运营",
+    advantage: "文旅局、景区、酒店、旅行社岗位多；喜欢外出考察适合该专业",
+    disadvantage: "旅游淡旺季明显，节假日无休；导游基层薪资不稳定",
+    job: "导游、酒店运营、景区管理、文旅策划公务员"
+  },
+  "公共事业管理": {
+    category: "管理学类",
+    course: "公共管理、行政管理、公共政策、事业单位管理",
+    advantage: "事业单位、街道办、文旅、卫健系统考公适配度高",
+    disadvantage: "企业对口岗位极少；专业内容宽泛，无核心技能",
+    job: "街道办、事业单位行政、政务大厅、基层文职"
+  },
+  "行政管理": {
+    category: "管理学类",
+    course: "公文写作、办公实务、会务管理、机关事务",
+    advantage: "企业、机关、学校通用文职，工作稳定轻松；考公申论优势大",
+    disadvantage: "替代性极强，薪资提升缓慢；日常工作琐碎重复",
+    job: "公司行政、机关文员、学校办公室、会务专员"
+  },
+  "图书馆学": {
+    category: "管理学类",
+    course: "图书分类、档案管理、信息检索、数字图书馆",
+    advantage: "图书馆、档案馆事业单位编制，竞争小，工作清闲",
+    disadvantage: "岗位数量少；薪资常年稳定无大幅涨幅",
+    job: "高校图书馆、档案馆、文旅事业单位、资料管理员"
+  },
+
+  // ===== 7. 艺术学类 =====
+  "视觉传达设计": {
+    category: "艺术学类",
+    course: "平面设计、海报、LOGO、版式、PS/AI软件",
+    advantage: "电商、广告、传媒全行业刚需；可自由接单副业，就业选择多",
+    disadvantage: "基础美工内卷严重；长期久坐，加班改图频繁",
+    job: "平面设计师、电商美工、品牌视觉、广告设计"
+  },
+  "广播电视编导": {
+    category: "艺术学类",
+    course: "短视频拍摄、影视剪辑、脚本策划、纪录片制作",
+    advantage: "短视频、自媒体、电视台、新媒体公司大量招人",
+    disadvantage: "乙方剧组加班熬夜常态化；基础剪辑岗位薪资偏低",
+    job: "短视频编导、影视剪辑、自媒体拍摄、电视台栏目策划"
+  },
+  "播音与主持艺术": {
+    category: "艺术学类",
+    course: "普通话、即兴评述、出镜主持、广播配音",
+    advantage: "融媒体、电台、学校播音社团、直播行业适配",
+    disadvantage: "头部岗位竞争极端激烈，普通毕业生多做直播带货；线下主持收入不稳定",
+    job: "电台主播、短视频出镜、婚庆主持、学校播音老师"
+  },
+  "环境设计": {
+    category: "艺术学类",
+    course: "室内装修、景观设计、CAD制图、空间规划",
+    advantage: "装修公司、设计院、地产企业持续招人，实操性强",
+    disadvantage: "基层设计师需要跑工地，谈客户；改方案频繁，加班多",
+    job: "室内设计师、景观设计、装修施工图设计师"
+  },
+  "数字媒体艺术": {
+    category: "艺术学类",
+    course: "动画、三维建模、特效、短视频特效制作",
+    advantage: "游戏公司、动漫、短视频特效赛道新兴热门，发展前景好",
+    disadvantage: "学习软件多，上手难度高；项目赶工期经常加班",
+    job: "游戏原画、短视频特效、动画制作、三维建模师"
+  }
+};
+
+const scienceMajor = {
+  // ===== 1. 理学类 =====
+  "数学与应用数学": {
+    category: "理学类",
+    course: "高数、线性代数、概率论、数理统计、建模",
+    advantage: "通用性最强，可转计算机、金融、大数据、教师；考研跨考万金油",
+    disadvantage: "纯理论枯燥，本科直接就业岗位少；高薪岗位普遍要求读研",
+    job: "中小学数学教师、数据分析师、银行风控、程序员（跨专业）"
+  },
+  "信息与计算科学": {
+    category: "理学类",
+    course: "数值计算、编程、数学建模、数据库算法",
+    advantage: "数学+计算机复合，互联网、大数据企业优先招录",
+    disadvantage: "两边都不精，不如纯计算机实操能力强；定位模糊",
+    job: "数据处理、算法助理、后端开发、统计分析"
+  },
+  "应用物理学": {
+    category: "理学类",
+    course: "电磁学、光学、半导体、实验物理",
+    advantage: "半导体、芯片、新能源、光学企业适配，国家扶持赛道",
+    disadvantage: "本科基础岗位薪资一般，研发岗必须读研；实验周期长",
+    job: "半导体工程师、光学检测、新能源设备研发、物理教师"
+  },
+  "应用化学": {
+    category: "理学类",
+    course: "有机化学、材料化学、化工实验、检测分析",
+    advantage: "化工厂、药企、质检、新材料企业稳定招人",
+    disadvantage: "部分实验存在化学试剂污染；工厂基层岗位环境一般",
+    job: "质检化验员、药企研发助理、新材料检测、化工技术员"
+  },
+  "生物科学": {
+    category: "理学类",
+    course: "细胞生物、微生物、遗传学、生物实验",
+    advantage: "生物医药、检测机构、教育行业适配，生命科学长期朝阳",
+    disadvantage: "本科薪资极低，高端研发全部要求硕博；实验重复枯燥",
+    job: "生物教师、第三方检测、药企实验员、考研深造"
+  },
+  "统计学": {
+    category: "理学类",
+    course: "数理统计、大数据分析、SPSS、Python数据分析",
+    advantage: "互联网大数据、金融、政企统计局刚需，高薪赛道",
+    disadvantage: "需要数学+编程双重能力，学习难度高；竞争逐年加剧",
+    job: "数据分析师、金融量化、市场调研、统计局公务员"
+  },
+  "地理科学": {
+    category: "理学类",
+    course: "自然地理、GIS、遥感、城乡规划基础",
+    advantage: "自然资源局、测绘、国土事业单位考公友好；GIS软件人才稀缺",
+    disadvantage: "野外勘测岗位辛苦；纯地理对口企业较少",
+    job: "测绘技术员、地理教师、自然资源局、GIS数据处理"
+  },
+
+  // ===== 2. 工学类 =====
+  "计算机科学与技术": {
+    category: "工学类",
+    course: "数据结构、C++、操作系统、数据库、人工智能",
+    advantage: "就业面广、平均薪资高、互联网国企均可、考研选择多",
+    disadvantage: "学习难度大、技术持续更新、加班普遍、35岁职场压力",
+    job: "后端开发、算法工程师、政企信息化、测试工程师"
+  },
+  "人工智能": {
+    category: "工学类",
+    course: "机器学习、深度学习、Python、计算机视觉、算法",
+    advantage: "国家重点扶持赛道，大厂薪资天花板高，人才缺口大",
+    disadvantage: "数学要求极高，学习难度大；技术更新快，需要持续自学；35岁行业压力大",
+    job: "算法工程师、AI训练师、自动驾驶研发、大数据AI开发"
+  },
+  "数据科学与大数据技术": {
+    category: "工学类",
+    course: "Hadoop、数据库、爬虫、数据分析、云计算",
+    advantage: "全行业数字化刚需，互联网、金融、政企都大量招聘",
+    disadvantage: "知识杂糅，既要懂编程又要懂统计；初级岗位内卷严重",
+    job: "大数据开发、数据挖掘、企业数据中台、数据分析"
+  },
+  "软件工程": {
+    category: "工学类",
+    course: "Java/Python开发、项目管理、前后端、软件测试",
+    advantage: "互联网、软件外包、政企信息化核心专业，实习机会多",
+    disadvantage: "普遍加班严重；外包岗位薪资低，技术含金量不足",
+    job: "后端开发、前端工程师、软件测试、政企信息化开发"
+  },
+  "网络空间安全": {
+    category: "工学类",
+    course: "渗透测试、防火墙、攻防技术、密码学",
+    advantage: "政企、银行、互联网强制配备安全岗，人才缺口大，越老越吃香",
+    disadvantage: "攻防技术学习难度高；应急事件需要随时加班处理漏洞",
+    job: "网络安全工程师、渗透测试、企业运维安全、公安网安岗"
+  },
+  "电子信息工程": {
+    category: "工学类",
+    course: "电路、信号处理、单片机、通信原理",
+    advantage: "通信、芯片、手机硬件企业刚需，国企电子厂稳定",
+    disadvantage: "硬件更新快，需要持续学习；部分岗位车间倒班",
+    job: "硬件工程师、通信设备调试、芯片测试、运营商技术岗"
+  },
+  "自动化": {
+    category: "工学类",
+    course: "自动控制、PLC、机器人、电气控制、单片机",
+    advantage: "工厂智能制造、机器人、新能源车企缺口巨大，就业稳定",
+    disadvantage: "工厂现场调试岗位经常出差、倒班；设备维修环境嘈杂",
+    job: "自动化产线调试、机器人工程师、新能源设备运维"
+  },
+  "机械设计制造及其自动化": {
+    category: "工学类",
+    course: "机械制图、数控加工、模具设计、力学",
+    advantage: "制造业根基专业，车企、机械厂、装备企业常年招人，男生好就业",
+    disadvantage: "基层车间环境一般，设备油污多；传统机械薪资涨幅慢",
+    job: "机械制图、数控技术员、车企零部件设计、模具工程师"
+  },
+  "车辆工程": {
+    category: "工学类",
+    course: "汽车构造、新能源汽车、底盘设计、整车研发",
+    advantage: "新能源汽车爆发，比亚迪、特斯拉等车企大量扩招，前景好",
+    disadvantage: "车企研发集中一二线城市；工厂装配岗位加班多",
+    job: "新能源整车研发、汽车底盘设计、车企测试工程师"
+  },
+  "新能源科学与工程": {
+    category: "工学类",
+    course: "光伏、风电、储能、新能源电力系统",
+    advantage: "碳中和政策扶持，光伏、储能、风电企业高速扩张，国家电网适配",
+    disadvantage: "风电、光伏电站多在偏远地区，基层运维离家远",
+    job: "光伏电站运维、储能研发、新能源电力工程师、电网技术岗"
+  },
+  "材料成型及控制工程": {
+    category: "工学类",
+    course: "金属材料、铸造、3D打印、材料加工",
+    advantage: "制造业、航空航天、模具企业刚需，制造业回暖需求上涨",
+    disadvantage: "工厂车间岗位高温、油污；传统材料薪资上限一般",
+    job: "3D打印技术员、金属材料检测、模具成型工程师"
+  },
+  "给排水科学与工程": {
+    category: "工学类",
+    course: "水处理、市政管网、污水处理、建筑给排水",
+    advantage: "水务局、市政设计院、环保企业稳定，体制内岗位多",
+    disadvantage: "工地现场施工岗位驻外；日常和污水管道打交道",
+    job: "市政设计院、污水处理厂、水务局公务员、建筑给排水设计"
+  },
+  "环境工程": {
+    category: "工学类",
+    course: "污水治理、大气污染、土壤修复、环保检测",
+    advantage: "环保政策加持，环保局、第三方检测、工程公司持续招人",
+    disadvantage: "行业整体薪资偏低；现场治理项目出差多",
+    job: "环保检测员、污水治理工程、环保局事业单位、土壤修复"
+  },
+  "交通运输工程": {
+    category: "工学类",
+    course: "道路勘测、桥梁基础、交通规划、轨道交通",
+    advantage: "交通局、中铁、中建国企大量招录，项目稳定福利好",
+    disadvantage: "工程项目常年驻工地，长期离家；户外作业风吹日晒",
+    job: "道路设计师、中铁施工技术员、轨道交通运维、交通局"
+  },
+  "测绘工程": {
+    category: "工学类",
+    course: "遥感测绘、GPS测量、地籍测绘、GIS制图",
+    advantage: "自然资源局、测绘院、建筑地产刚需，国企岗位充足",
+    disadvantage: "外业测绘需要户外跑现场，风吹日晒；偏远地区项目多",
+    job: "测绘院技术员、地籍测量、国土事业单位、工程测绘"
+  },
+
+  // ===== 3. 农学类 =====
+  "农学": {
+    category: "农学类",
+    course: "作物栽培、育种、土壤肥料、现代农业技术",
+    advantage: "农业农村局、乡镇农技站编制，政策补贴多，竞争小",
+    disadvantage: "基层农业站乡镇偏远；田间试验风吹日晒；整体薪资不高",
+    job: "乡镇农技员、农业局公务员、种子企业研发、农场管理"
+  },
+  "园林": {
+    category: "农学类",
+    course: "园林景观、苗木培育、庭院设计、绿化施工",
+    advantage: "市政绿化、地产景观、园林设计院岗位充足",
+    disadvantage: "绿化施工岗位户外作业；苗木行业受季节影响大",
+    job: "景观设计师、市政绿化工程、苗圃管理、园林事业单位"
+  },
+  "动物医学": {
+    category: "农学类",
+    course: "动物解剖、畜禽疾病、宠物诊疗、防疫检疫",
+    advantage: "宠物行业爆发，宠物医院缺口极大；畜牧局、海关检疫体制岗稳定",
+    disadvantage: "接触动物疫病，工作脏累；节假日宠物医院无休",
+    job: "宠物医生、畜牧局检疫、养殖场兽医、海关动检"
+  },
+  "林学": {
+    category: "农学类",
+    course: "森林培育、森林防火、林业资源调查、园林苗木",
+    advantage: "林业局、林场事业单位编制，竞争小，工作环境生态好",
+    disadvantage: "林场多山区偏远地区；野外巡护辛苦",
+    job: "林业局公务员、林场管护、苗木培育、森林防火专员"
+  },
+
+  // ===== 4. 医学类 =====
+  "临床医学": {
+    category: "医学类",
+    course: "解剖学、生理学、病理学、内外科",
+    advantage: "终身刚需、越老越吃香、公立医院稳定、社会认可度高",
+    disadvantage: "学制5+3起步、学习周期极长、值班劳累、前期收入低",
+    job: "临床医生、三甲医院、卫健委、医学科研"
+  },
+  "口腔医学": {
+    category: "医学类",
+    course: "牙体牙髓、正畸、外科拔牙、口腔修复",
+    advantage: "私立口腔诊所遍地开花，自主创业门槛低；薪资上限极高，越老越吃香",
+    disadvantage: "本科5年，规培2-3年；器械耗材学习成本高；长时间久坐颈椎损伤",
+    job: "公立医院口腔科、私人牙科诊所、正畸医师、口腔修复医生"
+  },
+  "护理学": {
+    category: "医学类",
+    course: "内科护理、外科护理、急救护理、病房实操",
+    advantage: "各级医院、社区卫生中心常年缺人，就业率接近100%",
+    disadvantage: "倒夜班常态化；医患沟通压力大；基础护士薪资普通",
+    job: "医院护士、社区卫生服务中心、医美护士、养老护理主管"
+  },
+  "医学检验技术": {
+    category: "医学类",
+    course: "临床检验、生化检测、微生物、病理化验",
+    advantage: "检验科室内工作，不用直面病人，极少夜班；医院刚需岗位",
+    disadvantage: "无法考取执业医师，不能行医；晋升空间有限",
+    job: "医院检验科、第三方体检机构、疾控中心化验岗"
+  },
+  "麻醉学": {
+    category: "医学类",
+    course: "临床麻醉、急救复苏、疼痛诊疗、手术室实操",
+    advantage: "医院必备科室，人才缺口大，薪资高于普通临床；科室独立稳定",
+    disadvantage: "全程手术室密闭环境，手术连台加班；应急抢救心理压力大",
+    job: "三甲医院麻醉医师、疼痛门诊、急救中心、医美麻醉"
+  },
+  "药学": {
+    category: "医学类",
+    course: "药剂学、药理学、药物制剂、药品管理",
+    advantage: "药企、药店、医院药房、药监局全覆盖，就业稳定",
+    disadvantage: "药店基层销售业绩压力大；医院药房重复性工作多",
+    job: "医院药房、药企质检、药店药师、药监局公务员"
+  },
+  "预防医学": {
+    category: "医学类",
+    course: "流行病学、公共卫生、疾控防疫、卫生检验",
+    advantage: "疾控中心、卫健委、社区防疫定向招录，疫情后岗位扩招",
+    disadvantage: "医院临床岗位无法从事；薪资低于临床医生",
+    job: "疾控中心、卫健委、社区防疫、体检中心公共卫生岗"
+  },
+
+  // ===== 5. 交叉理科类 =====
+  "工程管理": {
+    category: "交叉理科类",
+    course: "工程造价、施工管理、工程制图、项目管控",
+    advantage: "中建、中铁、地产项目管理岗，考二建、一建证书收入大幅提升",
+    disadvantage: "工程项目长期驻场，全国各地流动；工地环境简陋",
+    job: "工程项目经理、造价员、地产工程管理、建筑监理"
+  },
+  "工程造价": {
+    category: "交叉理科类",
+    course: "工程量计算、定额、招投标、建筑预算",
+    advantage: "咨询事务所、地产、施工企业刚需；可接私活提升收入",
+    disadvantage: "结算期疯狂加班；长期对着图纸计算，用眼疲劳",
+    job: "造价咨询、招投标专员、地产成本核算、审计局造价岗"
+  }
+};
+
+const artMajor = {
+  // ===== 1. 美术类 =====
+  "美术学": {
+    category: "美术类",
+    course: "素描、色彩、中外美术史、艺术鉴赏、师范教学法",
+    advantage: "师范类偏多，考编稳定；也可走艺术教育、美术馆策展路线",
+    disadvantage: "纯创作岗位稀缺；理论方向就业局限于教育/研究",
+    job: "中小学美术教师、美术馆策展、艺考培训、艺术编辑"
+  },
+  "绘画": {
+    category: "美术类",
+    course: "素描、油画、水彩、版画、创作技法、艺术史",
+    advantage: "自由艺术家路线；插画/概念设计可切入游戏影视",
+    disadvantage: "纯绘画就业窄，收入不稳定；需长期积累作品",
+    job: "职业画家、游戏原画、书籍插画、艺考培训、美术教师"
+  },
+  "中国画": {
+    category: "美术类",
+    course: "山水/花鸟/人物、书法、篆刻、中国美术史",
+    advantage: "国潮/文创兴起带来新赛道；文旅项目、书画院需求",
+    disadvantage: "市场化程度低；纯创作难以维生，多依赖教学/展览",
+    job: "画院画家、艺术品拍卖、文创设计、书画教师"
+  },
+  "雕塑": {
+    category: "美术类",
+    course: "泥塑、木雕、金属工艺、公共艺术、造型基础",
+    advantage: "城市公共艺术项目、地产雕塑装置需求稳定",
+    disadvantage: "工作强度大（户外/工坊）；就业面较窄，多在设计公司",
+    job: "公共雕塑设计师、地产装置艺术、雕塑工作室、艺术教师"
+  },
+
+  // ===== 2. 设计类 =====
+  "视觉传达设计": {
+    category: "设计类",
+    course: "平面设计、海报、LOGO、版式、字体、UI基础、PS/AI",
+    advantage: "电商/广告/传媒全行业刚需；上手快，可自由接单副业",
+    disadvantage: "基础美工内卷严重；改稿频繁，加班常态",
+    job: "平面设计师、电商视觉、品牌设计、UI设计师、广告公司"
+  },
+  "环境设计": {
+    category: "设计类",
+    course: "室内装修、景观设计、CAD/SketchUp、空间规划、施工工艺",
+    advantage: "装修公司/设计院/地产企业持续招人，实操性强",
+    disadvantage: "基层需跑工地谈客户；改方案频繁，加班多",
+    job: "室内设计师、景观设计师、软装设计、装修施工图设计"
+  },
+  "产品设计": {
+    category: "设计类",
+    course: "工业设计、造型、结构、Rhino/Keyshot、用户体验",
+    advantage: "3C/家电/家具品牌集中招聘；作品集扎实起点高",
+    disadvantage: "项目周期长；一线厂商门槛高，非顶尖院校难进",
+    job: "工业设计师、家电/3C造型、家具设计、消费品品牌设计"
+  },
+  "服装与服饰设计": {
+    category: "设计类",
+    course: "服装结构、裁剪、面料、时装画、服装史、品牌企划",
+    advantage: "国潮服装/新消费品牌崛起；可创立个人品牌",
+    disadvantage: "传统服装厂内卷严重；独立设计师前期资金压力大",
+    job: "服装设计师、买手、时尚编辑、品牌企划、独立设计师"
+  },
+  "公共艺术": {
+    category: "设计类",
+    course: "空间装置、壁画、雕塑基础、公共文化项目策划",
+    advantage: "城市更新/文旅小镇/地产大盘持续投入公共艺术",
+    disadvantage: "项目周期长，回款慢；对创意与协作要求高",
+    job: "公共艺术项目、文旅策划、装置设计、艺术工程公司"
+  },
+  "数字媒体艺术": {
+    category: "设计类",
+    course: "三维建模、动效、特效、交互设计、C4D/AE/Blender",
+    advantage: "游戏/短视频特效/元宇宙新兴热门，发展空间大",
+    disadvantage: "软件多、上手陡；项目赶工期加班严重",
+    job: "游戏原画/3D、短视频特效、动效设计、影视后期"
+  },
+  "艺术与科技": {
+    category: "设计类",
+    course: "交互设计、新媒体艺术、编程基础、传感器、Arduino",
+    advantage: "跨界方向新兴，博物馆/沉浸展/艺术科技公司需求增",
+    disadvantage: "国内课程体系尚不成熟；就业岗位仍集中一线城市",
+    job: "交互设计、沉浸式展览设计、新媒体艺术、艺术科技公司"
+  },
+
+  // ===== 3. 音乐类 =====
+  "音乐学": {
+    category: "音乐类",
+    course: "音乐史、和声、曲式分析、视唱练耳、音乐美学",
+    advantage: "考编方向稳定，音乐教师、音乐编辑需求持续",
+    disadvantage: "纯理论就业窄；顶尖研究岗几乎只招硕博",
+    job: "中小学音乐教师、音乐编辑、艺考培训、音乐评论"
+  },
+  "音乐表演": {
+    category: "音乐类",
+    course: "声乐/器乐主修、合唱、艺术指导、舞台实践",
+    advantage: "文工团/剧院/院校招聘对口；可发展个人演艺",
+    disadvantage: "编制岗位稀缺；独立演艺路线收入两极分化",
+    job: "文工团演员、乐团演奏员、艺考陪练、音乐培训机构"
+  },
+  "作曲与作曲技术理论": {
+    category: "音乐类",
+    course: "作曲、和声、复调、配器、电子音乐制作",
+    advantage: "影视配乐/游戏音效/流行编曲赛道机会多",
+    disadvantage: "顶尖圈子小；作品变现需长期积累人脉",
+    job: "影视配乐、游戏音效、流行音乐编曲、音乐制作人"
+  },
+
+  // ===== 4. 舞蹈类 =====
+  "舞蹈学": {
+    category: "舞蹈类",
+    course: "中国舞/芭蕾/现代舞、舞蹈史、教学法、编导基础",
+    advantage: "舞蹈教师、艺考培训、师范类考编方向清晰",
+    disadvantage: "职业寿命短；培训机构工作强度大且薪资普遍",
+    job: "中小学舞蹈教师、艺考培训、少儿舞蹈机构、文化馆"
+  },
+  "舞蹈表演": {
+    category: "舞蹈类",
+    course: "基本功、剧目排练、双人舞、身体训练、舞台表演",
+    advantage: "文工团/剧院/歌舞团编制岗；可参与影视综艺",
+    disadvantage: "身体伤病风险高；黄金职业期只有 10-15 年",
+    job: "文工团舞者、歌舞剧院演员、综艺舞者、舞蹈教师"
+  },
+  "舞蹈编导": {
+    category: "舞蹈类",
+    course: "编舞技法、舞蹈作品分析、音乐分析、多人编排",
+    advantage: "综艺/短视频/晚会需要大量编导，兼职机会多",
+    disadvantage: "作品变现难；顶尖圈子极窄，人脉资源关键",
+    job: "综艺舞蹈编导、晚会编导、短视频编舞、艺考培训"
+  },
+
+  // ===== 5. 戏剧影视类 =====
+  "表演": {
+    category: "戏剧影视类",
+    course: "台词、形体、声乐、戏剧表演、镜头前表演",
+    advantage: "影视/话剧/综艺持续需要演员；机会与运气并存",
+    disadvantage: "普通毕业生跑组竞争激烈；收入极不稳定",
+    job: "影视演员、话剧演员、综艺艺人、配音演员、表演教师"
+  },
+  "戏剧影视文学": {
+    category: "戏剧影视类",
+    course: "剧本创作、影视理论、剧作分析、编剧技巧",
+    advantage: "网剧/网络电影/短剧市场爆发，编剧需求大",
+    disadvantage: "行业内卷，署名权/版权保护问题多；新人稿费低",
+    job: "编剧、剧本策划、影视文学统筹、短剧编剧、内容运营"
+  },
+  "戏剧影视导演": {
+    category: "戏剧影视类",
+    course: "导演理论、影视制作、场面调度、剪辑、演员调度",
+    advantage: "短视频/网剧/广告片导演机会多；副业可接商单",
+    disadvantage: "职业周期长，需从场记/副导演做起；作品才是通行证",
+    job: "影视导演、广告导演、短视频导演、剧组副导演、平台影视策划"
+  },
+  "戏剧影视美术设计": {
+    category: "戏剧影视类",
+    course: "美术设计、置景、道具、服化道、影视场景概念",
+    advantage: "国产影视工业化提升，美术团队需求增加",
+    disadvantage: "剧组作息极不规律；跨地区出差频繁",
+    job: "影视美术、剧组置景、概念设计、道具师、影视制片美术"
+  },
+  "影视摄影与制作": {
+    category: "戏剧影视类",
+    course: "摄影机操作、灯光、后期剪辑、调色、DIT",
+    advantage: "短视频/广告/网剧持续需要摄影师，可兼职婚礼跟拍",
+    disadvantage: "剧组辛苦，扛设备体力活；跟组周期长",
+    job: "剧组摄影师、广告摄影、婚礼跟拍、后期调色师、Vlog博主"
+  },
+  "动画": {
+    category: "戏剧影视类",
+    course: "二维/三维动画、原画设计、动作、Maya/After Effects",
+    advantage: "国漫/游戏动画/短视频动画需求爆炸增长",
+    disadvantage: "外包公司加班严重；一线动画公司门槛高",
+    job: "动画师、原画师、游戏动画、影视动画、独立动画创作"
+  },
+
+  // ===== 6. 传媒类 =====
+  "广播电视编导": {
+    category: "传媒类",
+    course: "短视频拍摄、影视剪辑、脚本策划、纪录片制作",
+    advantage: "短视频/自媒体/电视台/新媒体公司大量招人",
+    disadvantage: "乙方剧组熬夜常态；基础剪辑薪资偏低",
+    job: "短视频编导、影视剪辑、自媒体拍摄、电视台栏目策划"
+  },
+  "播音与主持艺术": {
+    category: "传媒类",
+    course: "普通话、即兴评述、出镜主持、广播配音、新闻播报",
+    advantage: "融媒体/电台/直播/学校社团适配面广",
+    disadvantage: "头部岗位极端内卷；多数毕业生做直播带货",
+    job: "电台主播、短视频出镜、婚庆主持、配音演员、播音教师"
+  },
+  "摄影": {
+    category: "传媒类",
+    course: "摄影基础、商业摄影、纪实、后期修图、灯光布置",
+    advantage: "婚礼/写真/商业摄影市场大，可自主开工作室",
+    disadvantage: "起步阶段器材投入大；旺季婚礼档累到崩溃",
+    job: "商业摄影师、婚礼摄影、影楼摄影、独立工作室、图片编辑"
+  },
+  "录音艺术": {
+    category: "传媒类",
+    course: "录音技术、混音、后期音频、影视声音设计",
+    advantage: "影视/游戏/播客/音乐工业需要专业音频师",
+    disadvantage: "岗位数量有限；顶尖工作室门槛高",
+    job: "影视录音师、游戏音频、播客后期、音乐混音师、直播音效"
+  },
+
+  // ===== 7. 书法·理论 =====
+  "书法学": {
+    category: "书法·理论",
+    course: "楷/行/隶/篆/草各体临摹、书法史、篆刻、创作",
+    advantage: "国家推动传统文化，中小学书法教师需求增；文创市场大",
+    disadvantage: "纯创作变现难；师范考编竞争激烈",
+    job: "中小学书法教师、书法培训、文创设计、书画院、篆刻工作室"
+  },
+  "艺术史论": {
+    category: "书法·理论",
+    course: "中外艺术史、艺术理论、艺术鉴赏、艺术管理基础",
+    advantage: "美术馆/拍卖行/艺术媒体的策展、编辑、鉴定岗对口",
+    disadvantage: "顶尖岗位主要在一线城市；本科就业面窄，多需读研",
+    job: "美术馆策展、拍卖行专员、艺术媒体编辑、画廊运营、艺术教育"
+  },
+  "艺术管理": {
+    category: "书法·理论",
+    course: "艺术项目管理、文化政策、艺术市场、活动策划",
+    advantage: "文化产业/演出经纪/艺术机构运营新兴岗位多",
+    disadvantage: "跨专业竞争者多（管理/传媒背景）；起步薪资一般",
+    job: "剧院运营、艺术机构管理、演出经纪、展览策划、艺术品经纪"
+  }
+};
+
+document.querySelectorAll('.tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+function renderColleges() {
+  const search = document.getElementById('college-search').value.trim().toLowerCase();
+  const province = document.getElementById('province-filter').value;
+  const grid = document.getElementById('college-grid');
+
+  const filtered = collegeDB.filter(c => {
+    const matchSearch = !search || c.name.toLowerCase().includes(search) || c.prov.toLowerCase().includes(search);
+    const matchProv = !province || c.prov === province;
+    return matchSearch && matchProv;
+  });
+
+  if (filtered.length === 0) {
+    grid.innerHTML = '<div class="empty" style="grid-column:1/-1;">😢 暂无符合条件的院校</div>';
+    return;
+  }
+
+  grid.innerHTML = filtered.map(c => `
+    <div class="college-card" data-name="${c.name}">
+      <h3>${c.name}</h3>
+      <div class="college-meta"><span class="label">所在地：</span>${c.prov}</div>
+      <div class="college-meta"><span class="label">层次：</span>${c.level}</div>
+      <div class="tag-row">
+        ${c.majorLib.map(m => `<span class="tag">${m}</span>`).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+const provinces = [...new Set(collegeDB.map(c => c.prov))];
+const provSelect = document.getElementById('province-filter');
+provinces.forEach(p => {
+  const opt = document.createElement('option');
+  opt.value = p; opt.textContent = p;
+  provSelect.appendChild(opt);
+});
+
+document.getElementById('college-search').addEventListener('input', renderColleges);
+document.getElementById('province-filter').addEventListener('change', renderColleges);
+// 事件委托：点击院校卡片弹出详情
+document.getElementById('college-grid').addEventListener('click', (e) => {
+  const card = e.target.closest('.college-card');
+  if (card && card.dataset.name) showCollegeDetail(card.dataset.name);
+});
+renderColleges();
+
+function setupMajorPanel(dataObj, listId, detailId, searchId) {
+  const listEl = document.getElementById(listId);
+  const detailEl = document.getElementById(detailId);
+  const searchEl = document.getElementById(searchId);
+  let selectedName = null;
+
+  function renderList() {
+    const q = searchEl.value.trim().toLowerCase();
+    const names = Object.keys(dataObj).filter(n => !q || n.toLowerCase().includes(q));
+
+    if (names.length === 0) {
+      listEl.innerHTML = '<div class="empty">😢 暂无匹配专业，换个关键词试试</div>';
+      detailEl.innerHTML = '';
+      return;
+    }
+
+    // 按 category 分组
+    const groups = {};
+    const order = [];
+    names.forEach(n => {
+      const cat = dataObj[n].category || '其他';
+      if (!groups[cat]) { groups[cat] = []; order.push(cat); }
+      groups[cat].push(n);
+    });
+
+    listEl.innerHTML = order.map(cat => `
+      <div class="major-group">
+        <div class="major-group-title">${cat} <span class="major-group-count">${groups[cat].length}</span></div>
+        <div class="major-group-grid">
+          ${groups[cat].map(n => `
+            <div class="major-btn ${n===selectedName?'active':''}" data-name="${n}">${n}</div>
+          `).join('')}
+        </div>
+      </div>
+    `).join('');
+
+    listEl.querySelectorAll('.major-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedName = btn.dataset.name;
+        renderList();
+        renderDetail();
+      });
+    });
+  }
+
+  function renderDetail() {
+    if (!selectedName || !dataObj[selectedName]) {
+      detailEl.innerHTML = '';
+      return;
+    }
+    const info = dataObj[selectedName];
+    detailEl.innerHTML = `
+      <div class="major-detail">
+        <h3>📌 ${selectedName}</h3>
+        <div class="detail-row course">
+          <div class="detail-label">📘 核心课程</div>
+          <div class="detail-text">${info.course}</div>
+        </div>
+        <div class="detail-row advantage">
+          <div class="detail-label">✅ 专业优势</div>
+          <div class="detail-text">${info.advantage}</div>
+        </div>
+        <div class="detail-row disadvantage">
+          <div class="detail-label">❌ 专业劣势</div>
+          <div class="detail-text">${info.disadvantage}</div>
+        </div>
+        <div class="detail-row job">
+          <div class="detail-label">💼 就业方向</div>
+          <div class="detail-text">${info.job}</div>
+        </div>
+        ${renderTopCollegesHTML(selectedName)}
+      </div>
+    `;
+  }
+
+  searchEl.addEventListener('input', renderList);
+  renderList();
+}
+
+setupMajorPanel(artsMajor, 'arts-list', 'arts-detail', 'arts-search');
+setupMajorPanel(scienceMajor, 'science-list', 'science-detail', 'science-search');
+setupMajorPanel(artMajor, 'art-list', 'art-detail', 'art-search');
+
+// ============ 院校参考位次（全国综合估算，非精确录取线）============
+const collegeRankMap = {
+  "清华大学": 60, "北京大学": 60, "中国人民大学": 700,
+  "北京航空航天大学": 1500, "北京理工大学": 2200, "北京师范大学": 1500,
+  "中国农业大学": 4500, "中央民族大学": 6000,
+  "北京交通大学": 8000, "北京工业大学": 15000, "北京科技大学": 9000,
+  "北京化工大学": 13000, "北京邮电大学": 4500, "北京林业大学": 18000,
+  "北京中医药大学": 12000, "北京外国语大学": 3500, "中国传媒大学": 5500,
+  "中央财经大学": 3000, "对外经济贸易大学": 3500, "北京体育大学": 30000,
+  "中国政法大学": 4000, "华北电力大学(北京)": 8000,
+  "中国矿业大学(北京)": 16000, "中国石油大学(北京)": 15000,
+  "中国地质大学(北京)": 18000, "首都师范大学": 15000,
+  "南开大学": 2000, "天津大学": 2500, "天津医科大学": 18000,
+  "河北工业大学": 22000, "太原理工大学": 25000, "内蒙古大学": 40000,
+  "大连理工大学": 3000, "东北大学": 8000, "辽宁大学": 25000,
+  "大连海事大学": 14000, "吉林大学": 8000, "东北师范大学": 18000,
+  "延边大学": 50000, "哈尔滨工业大学": 2800, "哈尔滨工程大学": 10000,
+  "东北林业大学": 35000, "东北农业大学": 45000,
+  "复旦大学": 250, "上海交通大学": 250, "同济大学": 1800,
+  "华东师范大学": 2500, "上海外国语大学": 4000, "上海财经大学": 2500,
+  "华东理工大学": 8000, "上海大学": 9000, "东华大学": 15000,
+  "第二军医大学": 5000, "南京大学": 500, "东南大学": 2000,
+  "苏州大学": 10000, "南京航空航天大学": 6000, "南京理工大学": 7000,
+  "河海大学": 10000, "南京农业大学": 20000, "中国药科大学": 15000,
+  "南京师范大学": 12000, "中国矿业大学(徐州)": 22000, "江南大学": 15000,
+  "浙江大学": 500, "浙江传媒学院": 45000,
+  "中国科学技术大学": 400, "合肥工业大学": 18000,
+  "厦门大学": 3500, "福州大学": 25000, "南昌大学": 30000,
+  "山东大学": 5000, "中国海洋大学": 10000, "中国石油大学(华东)": 18000,
+  "郑州大学": 25000, "武汉大学": 2200, "华中科技大学": 2500,
+  "华中师范大学": 10000, "华中农业大学": 25000, "武汉理工大学": 15000,
+  "中国地质大学(武汉)": 25000, "中南财经政法大学": 8000,
+  "中南大学": 4000, "湖南大学": 5000, "国防科技大学": 3500,
+  "湖南师范大学": 15000, "中山大学": 3000, "华南理工大学": 4500,
+  "暨南大学": 12000, "华南师范大学": 15000,
+  "广西大学": 40000, "海南大学": 45000,
+  "重庆大学": 7500, "西南大学": 22000,
+  "四川大学": 3500, "电子科技大学": 3500, "西南交通大学": 12000,
+  "西南财经大学": 6000, "四川农业大学": 40000,
+  "贵州大学": 50000, "云南大学": 25000, "西藏大学": 80000,
+  "西安交通大学": 2500, "西北工业大学": 3500, "西北农林科技大学": 20000,
+  "西安电子科技大学": 6000, "陕西师范大学": 15000, "西北大学": 18000,
+  "第四军医大学": 5000, "兰州大学": 12000,
+  "青海大学": 70000, "宁夏大学": 70000,
+  "新疆大学": 50000, "石河子大学": 80000,
+  // ---- 独立艺术院校（估算综合位次，实际按各省艺术类分数线为准）----
+  "中央美术学院": 9000, "中央音乐学院": 8000, "中国音乐学院": 14000,
+  "中央戏剧学院": 8000, "北京电影学院": 8000, "北京舞蹈学院": 14000,
+  "中国戏曲学院": 25000, "北京服装学院": 28000, "北京印刷学院": 35000,
+  "天津美术学院": 18000, "天津音乐学院": 24000, "天津工业大学": 22000,
+  "河北传媒学院": 70000, "河北美术学院": 75000, "山西传媒学院": 50000,
+  "鲁迅美术学院": 15000, "沈阳音乐学院": 22000, "大连艺术学院": 70000,
+  "吉林艺术学院": 40000, "哈尔滨音乐学院": 30000,
+  "上海音乐学院": 8000, "上海戏剧学院": 10000, "上海视觉艺术学院": 45000,
+  "南京艺术学院": 14000, "南京传媒学院": 55000,
+  "中国美术学院": 9000,
+  "浙江音乐学院": 22000, "浙江理工大学": 20000,
+  "景德镇陶瓷大学": 40000, "江西服装学院": 90000,
+  "山东艺术学院": 40000, "山东工艺美术学院": 28000,
+  "湖北美术学院": 17000, "武汉音乐学院": 22000,
+  "武汉传媒学院": 65000, "武汉设计工程学院": 75000,
+  "广州美术学院": 14000, "星海音乐学院": 20000,
+  "广西艺术学院": 45000, "北海艺术设计学院": 90000,
+  "四川美术学院": 14000,
+  "四川音乐学院": 22000, "四川传媒学院": 60000, "四川文化艺术学院": 80000,
+  "云南艺术学院": 45000, "云南艺术学院文华学院": 95000,
+  "内蒙古艺术学院": 55000,
+  "西安美术学院": 15000, "西安音乐学院": 24000,
+  "新疆艺术学院": 60000, "安徽艺术学院": 55000,
+  // ============ 双非公办 / 民办 / 中外合办 ============
+  "首都医科大学": 10000, "北京语言大学": 15000, "首都经济贸易大学": 18000,
+  "北京第二外国语学院": 32199, "北京工商大学": 31499, "北方工业大学": 35000,
+  "北京建筑大学": 35000, "北京农学院": 64399, "北京物资学院": 36223,
+  "中国劳动关系学院": 40250, "中国消防救援学院": 60374, "北京电子科技学院": 40250,
+  "国际关系学院": 15000, "中国青年政治学院": 40250, "中华女子学院": 40250,
+  "中国社会科学院大学": 10000, "北京城市学院": 105000,
+  "天津师范大学": 38500, "天津理工大学": 35000, "天津外国语大学": 28000,
+  "天津中医药大学": 42000, "天津农学院": 64399, "天津城建大学": 35000,
+  "天津体育学院": 80500, "天津天狮学院": 105000,
+  "燕山大学": 22000, "石家庄铁道大学": 50000, "河北大学": 50000,
+  "河北师范大学": 55000, "河北医科大学": 60000, "河北科技大学": 50000,
+  "河北经贸大学": 45000, "河北地质大学": 50000, "河北工程大学": 50000,
+  "河北建筑工程学院": 57499, "唐山学院": 57499, "邢台学院": 63249,
+  "沧州师范学院": 63249, "廊坊师范学院": 63249, "承德医学院": 69000,
+  "张家口学院": 57499, "河北北方学院": 57499, "防灾科技学院": 86250,
+  "应急管理大学": 75000, "河北体育学院": 114999, "河北科技学院": 150000,
+  "燕京理工学院": 150000,
+  "山西大学": 65000, "太原科技大学": 65000, "山西师范大学": 71500,
+  "山西财经大学": 58500, "山西医科大学": 78000, "中北大学": 65000,
+  "长治医学院": 89700, "运城学院": 74750, "忻州师范学院": 82225,
+  "太原师范学院": 82225, "山西中医药大学": 78000, "山西警察学院": 134550,
+  "山西工商学院": 195000,
+  "内蒙古工业大学": 65000, "内蒙古师范大学": 71500, "内蒙古医科大学": 78000,
+  "内蒙古财经大学": 58500, "内蒙古农业大学": 104000, "赤峰学院": 74750,
+  "呼伦贝尔学院": 74750, "集宁师范学院": 82225,
+  "沈阳大学": 50000, "沈阳师范大学": 55000, "辽宁科技大学": 50000,
+  "辽宁工程技术大学": 50000, "辽宁石油化工大学": 50000, "锦州医科大学": 60000,
+  "辽宁中医药大学": 60000, "沈阳药科大学": 60000, "大连大学": 50000,
+  "大连外国语大学": 40000, "辽宁师范大学": 55000, "渤海大学": 50000,
+  "沈阳体育学院": 114999, "辽宁财贸学院": 150000,
+  "长春工业大学": 50000, "长春师范大学": 55000, "吉林财经大学": 45000,
+  "吉林医药学院": 69000, "北华大学": 50000, "吉林师范大学": 55000,
+  "通化师范学院": 63249, "白城师范学院": 63249, "吉林体育学院": 114999,
+  "吉林外国语大学": 150000,
+  "黑龙江大学": 65000, "哈尔滨理工大学": 65000, "黑龙江中医药大学": 78000,
+  "齐齐哈尔大学": 65000, "牡丹江师范学院": 82225, "佳木斯大学": 65000,
+  "大庆师范学院": 82225, "哈尔滨体育学院": 149500, "黑龙江八一农垦大学": 104000,
+  "黑龙江东方学院": 195000, "黑龙江外国语学院": 195000,
+  "上海师范大学": 25000, "上海理工大学": 22000, "上海海事大学": 28000,
+  "上海电力大学": 35000, "上海对外经贸大学": 20000, "上海立信会计金融学院": 36223,
+  "上海政法学院": 44275, "上海健康医学院": 48299, "上海体育学院": 80500,
+  "上海建桥学院": 105000, "上海杉达学院": 105000, "上海立达学院": 105000,
+  "上海纽约大学": 8000,
+  "扬州大学": 30000, "南京工业大学": 22000, "江苏大学": 30000,
+  "南通大学": 40000, "江苏师范大学": 38500, "常州大学": 35000,
+  "南京审计大学": 18000, "苏州科技大学": 35000, "淮海工学院": 40250,
+  "盐城师范学院": 44275, "淮阴师范学院": 44275, "江苏理工学院": 40250,
+  "南京晓庄学院": 44275, "徐州医科大学": 42000, "南京体育学院": 80500,
+  "三江学院": 105000, "无锡太湖学院": 105000, "西交利物浦大学": 15000,
+  "昆山杜克大学": 9000,
+  "浙江工业大学": 20000, "浙江师范大学": 35000, "杭州师范大学": 30000,
+  "宁波大学": 25000, "浙江工商大学": 31499, "温州大学": 35000,
+  "浙江中医药大学": 42000, "湖州师范学院": 44275, "绍兴文理学院": 40250,
+  "台州学院": 40250, "丽水学院": 40250, "浙江海洋大学": 56000,
+  "杭州医学院": 48299, "浙江树人学院": 105000, "浙江越秀外国语学院": 105000,
+  "宁波诺丁汉大学": 18000, "温州肯恩大学": 35000,
+  "安徽师范大学": 55000, "安徽理工大学": 50000, "安徽工业大学": 50000,
+  "安徽农业大学": 80000, "安徽医科大学": 60000, "淮北师范大学": 55000,
+  "安庆师范大学": 55000, "阜阳师范大学": 55000, "皖西学院": 57499,
+  "滁州学院": 57499, "黄山学院": 57499, "安徽中医药大学": 60000,
+  "合肥学院": 57499, "安徽建筑大学": 50000, "安徽新华学院": 150000,
+  "安徽外国语学院": 150000,
+  "华侨大学": 30000, "福建农林大学": 56000, "福建师范大学": 35000,
+  "集美大学": 35000, "闽南师范大学": 38500, "泉州师范学院": 44275,
+  "厦门理工学院": 40250, "福建医科大学": 42000, "福建中医药大学": 42000,
+  "仰恩大学": 105000, "闽南理工学院": 105000, "福州外语外贸学院": 105000,
+  "江西师范大学": 55000, "江西财经大学": 45000, "华东交通大学": 50000,
+  "南昌航空大学": 50000, "东华理工大学": 50000, "江西理工大学": 50000,
+  "赣南师范大学": 55000, "井冈山大学": 50000, "宜春学院": 57499,
+  "九江学院": 57499, "江西中医药大学": 60000, "南昌医学院": 69000,
+  "南昌理工学院": 150000, "江西财经大学现代经济管理学院": 150000,
+  "山东师范大学": 40000, "山东科技大学": 35000, "山东理工大学": 35000,
+  "青岛大学": 25000, "济南大学": 35000, "烟台大学": 35000,
+  "曲阜师范大学": 38500, "聊城大学": 35000, "鲁东大学": 35000,
+  "临沂大学": 35000, "潍坊医学院": 48299, "滨州医学院": 48299,
+  "济宁医学院": 48299, "山东中医药大学": 42000, "山东政法学院": 44275,
+  "山东体育学院": 80500, "潍坊科技学院": 105000, "山东协和学院": 105000,
+  "齐鲁理工学院": 105000,
+  "河南师范大学": 55000, "河南科技大学": 50000, "河南理工大学": 50000,
+  "河南工业大学": 50000, "河南财经政法大学": 45000, "新乡医学院": 69000,
+  "河南中医药大学": 60000, "洛阳师范学院": 63249, "安阳师范学院": 63249,
+  "南阳师范学院": 63249, "商丘师范学院": 63249, "郑州轻工业大学": 50000,
+  "华北水利水电大学": 50000, "河南城建学院": 57499, "郑州工商学院": 150000,
+  "武汉科技大学": 50000, "湖北师范大学": 55000, "湖北工业大学": 50000,
+  "武汉纺织大学": 50000, "江汉大学": 50000, "三峡大学": 50000,
+  "长江大学": 50000, "湖北中医药大学": 60000, "武汉轻工大学": 50000,
+  "黄冈师范学院": 63249, "湖北文理学院": 57499, "湖北理工学院": 57499,
+  "湖北经济学院": 51749, "武汉体育学院": 114999, "武汉东湖学院": 150000,
+  "湖南农业大学": 80000, "湖南科技大学": 50000, "南华大学": 50000,
+  "湖南理工学院": 57499, "湖南文理学院": 57499, "湖南城市学院": 57499,
+  "湖南第一师范学院": 63249, "衡阳师范学院": 63249, "湘南学院": 57499,
+  "湖南中医药大学": 60000, "湖南工商大学": 45000, "湖南财政经济学院": 51749,
+  "湖南工业大学": 50000, "湖南涉外经济学院": 150000, "长沙医学院": 150000,
+  "深圳大学": 15000, "广州大学": 30000, "广东工业大学": 35000,
+  "广东外语外贸大学": 22000, "广州医科大学": 42000, "广东财经大学": 31499,
+  "五邑大学": 35000, "惠州学院": 40250, "韶关学院": 40250,
+  "肇庆学院": 40250, "嘉应学院": 40250, "韩山师范学院": 44275,
+  "岭南师范学院": 44275, "仲恺农业工程学院": 64399, "广东海洋大学": 56000,
+  "广州体育学院": 80500, "南方医科大学": 12000, "广东白云学院": 105000,
+  "广东东软学院": 105000, "广州商学院": 105000, "香港中文大学(深圳)": 10000,
+  "北京师范大学-香港浸会大学联合国际学院": 25000,
+  "广西师范大学": 55000, "桂林电子科技大学": 50000, "广西民族大学": 80000,
+  "桂林理工大学": 50000, "右江民族医学院": 69000, "广西中医药大学": 60000,
+  "南宁师范大学": 55000, "玉林师范学院": 63249, "梧州学院": 57499,
+  "广西科技大学": 50000,
+  "海南师范大学": 71500, "海南医学院": 89700, "琼台师范学院": 82225,
+  "重庆师范大学": 55000, "重庆理工大学": 50000, "重庆交通大学": 50000,
+  "重庆邮电大学": 30000, "重庆医科大学": 60000, "长江师范学院": 63249,
+  "重庆文理学院": 57499, "重庆三峡学院": 57499, "四川外国语大学": 40000,
+  "重庆科技学院": 57499,
+  "成都大学": 50000, "四川师范大学": 55000, "西华大学": 50000,
+  "西华师范大学": 55000, "成都理工大学": 50000, "西南科技大学": 50000,
+  "成都中医药大学": 60000, "川北医学院": 69000, "西南医科大学": 60000,
+  "成都医学院": 69000, "四川轻化工大学": 50000, "绵阳师范学院": 63249,
+  "内江师范学院": 63249, "成都体育学院": 114999, "成都文理学院": 150000,
+  "贵州师范大学": 71500, "贵州医科大学": 78000, "遵义医科大学": 78000,
+  "贵州财经大学": 58500, "贵州民族大学": 104000, "黔南民族师范学院": 82225,
+  "遵义师范学院": 82225, "贵州理工学院": 74750,
+  "云南师范大学": 55000, "云南民族大学": 80000, "云南财经大学": 45000,
+  "昆明理工大学": 50000, "大理大学": 50000, "玉溪师范学院": 63249,
+  "曲靖师范学院": 63249, "云南中医药大学": 60000, "云南农业大学": 80000,
+  "云南经济管理学院": 150000,
+  "西藏民族大学": 104000, "西藏农牧学院": 119599, "西藏藏医药大学": 78000,
+  "西安建筑科技大学": 25000, "西安科技大学": 50000, "西安理工大学": 50000,
+  "西安外国语大学": 40000, "西安邮电大学": 50000, "陕西理工大学": 50000,
+  "宝鸡文理学院": 57499, "咸阳师范学院": 63249, "渭南师范学院": 63249,
+  "延安大学": 50000, "榆林学院": 57499, "西安医学院": 69000,
+  "陕西中医药大学": 60000, "西安体育学院": 114999, "西安欧亚学院": 150000,
+  "西北师范大学": 40000, "甘肃政法大学": 71500, "兰州理工大学": 65000,
+  "兰州交通大学": 65000, "甘肃农业大学": 104000, "西北民族大学": 104000,
+  "天水师范学院": 82225, "河西学院": 74750, "陇东学院": 74750,
+  "甘肃医学院": 89700,
+  "青海师范大学": 71500, "青海民族大学": 104000,
+  "宁夏师范学院": 82225, "北方民族大学": 104000, "宁夏医科大学": 78000,
+  "银川能源学院": 195000,
+  "新疆师范大学": 71500, "新疆财经大学": 58500, "新疆农业大学": 104000,
+  "塔里木大学": 104000, "喀什大学": 65000, "伊犁师范大学": 71500,
+  "新疆医科大学": 78000, "昌吉学院": 74750
+};
+
+// ============ 专业→关键词映射（用于反向匹配 majorLib 强项）============
+const majorKeywords = {
+  // ---- 文科 ----
+  "哲学": ["哲学"],
+  "逻辑学": ["逻辑","哲学"],
+  "经济学": ["经济","财经","金融"],
+  "金融学": ["金融","财经","经济"],
+  "国际经济与贸易": ["国贸","国际","经济","财经","外经贸"],
+  "财政学": ["财政","财经"],
+  "保险学": ["保险","财经"],
+  "法学": ["法学","法律","政法"],
+  "知识产权": ["知识产权","法学"],
+  "社会学": ["社会","民族"],
+  "社会工作": ["社会","民族"],
+  "治安学": ["公安","治安"],
+  "小学教育": ["师范","教育"],
+  "学前教育": ["师范","教育","幼儿"],
+  "教育技术学": ["教育","师范"],
+  "特殊教育": ["师范","教育"],
+  "汉语言文学": ["中文","汉语","文史"],
+  "网络与新媒体": ["新媒体","新闻","传播","传媒"],
+  "广告学": ["广告","传媒","新闻","传播"],
+  "翻译": ["外语","翻译","小语种","语种"],
+  "历史学": ["历史","考古","文史"],
+  "工商管理": ["工商","管理"],
+  "人力资源管理": ["人力","管理"],
+  "市场营销": ["营销","管理"],
+  "旅游管理": ["旅游","管理"],
+  "公共事业管理": ["公共","管理","行政"],
+  "行政管理": ["行政","管理","公共"],
+  "图书馆学": ["图书","档案","信息"],
+  "视觉传达设计": ["设计","艺术","传媒"],
+  "广播电视编导": ["编导","传媒","影视","广播","播音"],
+  "播音与主持艺术": ["播音","主持","传媒"],
+  "环境设计": ["设计","建筑","艺术","城规"],
+  "数字媒体艺术": ["数字","媒体","传媒","艺术","动画","影视"],
+  // ---- 理科 ----
+  "数学与应用数学": ["数学"],
+  "信息与计算科学": ["数学","信息","计算"],
+  "应用物理学": ["物理"],
+  "应用化学": ["化学","化工"],
+  "生物科学": ["生物","生命"],
+  "统计学": ["统计","数学"],
+  "地理科学": ["地理","GIS","测绘","遥感"],
+  "计算机科学与技术": ["计算机","软件","信息"],
+  "人工智能": ["人工智能","AI","计算机","算法"],
+  "数据科学与大数据技术": ["大数据","数据","计算机","信息"],
+  "软件工程": ["软件","计算机"],
+  "网络空间安全": ["信息安全","安全","网络","计算机"],
+  "电子信息工程": ["电子","信息","通信"],
+  "自动化": ["自动化","控制","机械","电气"],
+  "机械设计制造及其自动化": ["机械","制造"],
+  "车辆工程": ["车辆","汽车","机械"],
+  "新能源科学与工程": ["新能源","能源","电气","动力"],
+  "材料成型及控制工程": ["材料","制造","机械"],
+  "给排水科学与工程": ["水利","土木","环境"],
+  "环境工程": ["环境","环保","化工"],
+  "交通运输工程": ["交通","轨道","运输"],
+  "测绘工程": ["测绘","地质","遥感"],
+  "农学": ["农学","农业","作物"],
+  "园林": ["园林","风景","林学"],
+  "动物医学": ["兽医","动物","畜牧"],
+  "林学": ["林学","林业"],
+  "临床医学": ["临床","医学"],
+  "口腔医学": ["口腔","医学"],
+  "护理学": ["护理","医学"],
+  "医学检验技术": ["医学","检验"],
+  "麻醉学": ["麻醉","医学"],
+  "药学": ["药学","医药","中药"],
+  "预防医学": ["预防","公共卫生","医学"],
+  "工程管理": ["工程管理"],
+  "工程造价": ["工程造价","造价"],
+
+  // ===== 艺术类专业关键词映射 =====
+  // 美术类
+  "美术学": ["美术","绘画","造型"],
+  "绘画": ["绘画","美术","油画","国画","版画","水彩"],
+  "中国画": ["国画","中国画","书画"],
+  "雕塑": ["雕塑","造型"],
+  // 设计类（视觉传达/环境/数字媒体已在原关键词中，此处保留兼容）
+  "产品设计": ["产品设计","工业设计","造型"],
+  "服装与服饰设计": ["服装","服饰","时装"],
+  "公共艺术": ["公共艺术","装置艺术","实验艺术"],
+  "艺术与科技": ["新媒体","交互","艺术与科技"],
+  // 音乐类
+  "音乐学": ["音乐","声乐","器乐","乐器"],
+  "音乐表演": ["音乐","声乐","器乐","乐器","表演"],
+  "作曲与作曲技术理论": ["作曲","编曲","配乐"],
+  // 舞蹈类
+  "舞蹈学": ["舞蹈"],
+  "舞蹈表演": ["舞蹈"],
+  "舞蹈编导": ["舞蹈","编导"],
+  // 戏剧影视类
+  "表演": ["表演","戏剧","影视"],
+  "戏剧影视文学": ["戏剧","影视","编剧","戏文"],
+  "戏剧影视导演": ["导演","戏剧","影视"],
+  "戏剧影视美术设计": ["戏剧影视美术","戏剧美术","戏美"],
+  "影视摄影与制作": ["影视","摄影","制作"],
+  "动画": ["动画"],
+  // 传媒类（广播电视编导/播音已在原关键词中）
+  "摄影": ["摄影"],
+  "录音艺术": ["录音","音频"],
+  // 书法·理论
+  "书法学": ["书法","书画"],
+  "艺术史论": ["史论","艺术史"],
+  "艺术管理": ["艺术管理","文化管理"]
+};
+
+// ============ 反向匹配：某专业的强校 Top N ============
+function matchCollegesByMajor(majorName) {
+  const keywords = majorKeywords[majorName] || [majorName];
+  const scored = [];
+  collegeDB.forEach(c => {
+    let score = 0;
+    c.majorLib.forEach(lib => {
+      keywords.forEach(kw => {
+        if (lib.indexOf(kw) !== -1) {
+          // 命中带"顶尖/A+/王牌/最全"等字眼加权
+          const isPeak = /顶尖|A\+|王牌|最全/.test(lib);
+          score += isPeak ? 4 : 1;
+        }
+      });
+    });
+    if (score > 0) {
+      const rank = collegeRankMap[c.name] || 99999;
+      const levelWeight = c.level.indexOf("C9") !== -1 ? 200
+        : c.level.indexOf("985") !== -1 ? 80
+        : c.level.indexOf("211") !== -1 ? 20 : 0;
+      // 综合排序：匹配分越高越靠前；同分按院校层次+位次排
+      const sortKey = -score * 1000 - levelWeight + (rank / 1000);
+      scored.push({...c, matchScore: score, rank, sortKey});
+    }
+  });
+  scored.sort((a, b) => a.sortKey - b.sortKey);
+  return scored.slice(0, 12);
+}
+
+function renderTopCollegesHTML(majorName) {
+  const list = matchCollegesByMajor(majorName);
+  if (list.length === 0) {
+    return `<div class="top-colleges">
+      <div class="top-colleges-title">🏆 该专业对口强校</div>
+      <div class="top-colleges-empty">😢 暂未收录该专业的对口强校，可切换到「院校查询」查看全部院校</div>
+    </div>`;
+  }
+  return `<div class="top-colleges">
+    <div class="top-colleges-title">🏆 该专业对口强校（按学科匹配 + 院校层次排序，Top ${list.length}）</div>
+    <div class="top-college-grid">
+      ${list.map(c => {
+        const levelShort = c.level.indexOf("C9") !== -1 ? "C9·985"
+          : c.level.indexOf("985") !== -1 ? "985"
+          : c.level.indexOf("211") !== -1 ? "211"
+          : "本科";
+        return `<div class="top-college-item">
+          <div class="name">${c.name}</div>
+          <div class="meta">
+            <span class="level-tag">${levelShort}</span>
+            <span class="rank-tag">${c.prov}</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+// ============ 分数 → 位次估算（分段线性插值）============
+function scoreToRank(score, subject) {
+  // 理科/物理组基准（河南/山东综合参考）
+  const scienceMap = [
+    [710, 20],[700, 100],[690, 300],[680, 600],[670, 1200],
+    [660, 2000],[650, 3200],[640, 5000],[630, 7500],[620, 11000],
+    [610, 16000],[600, 22000],[590, 30000],[580, 40000],[570, 52000],
+    [560, 67000],[550, 85000],[540, 105000],[520, 155000],[500, 220000],
+    [480, 300000],[450, 420000]
+  ];
+  // 文科/历史组：同分对应位次比理科低（文科题人少）
+  const artsMap = [
+    [680, 30],[670, 100],[660, 300],[650, 700],[640, 1500],
+    [630, 2800],[620, 4500],[610, 7000],[600, 10500],[590, 15000],
+    [580, 21000],[570, 28000],[560, 37000],[550, 48000],[540, 60000],
+    [520, 90000],[500, 130000],[480, 180000],[450, 260000]
+  ];
+  // 艺术类·美术综合分（山东/广东/湖北综合口径参考）
+  const artMsMap = [
+    [740, 20],[720, 80],[700, 200],[680, 500],[660, 1200],
+    [640, 2500],[620, 5000],[600, 9000],[580, 14500],[560, 22000],
+    [540, 32000],[520, 46000],[500, 65000],[480, 88000],[450, 130000],
+    [420, 180000]
+  ];
+  // 艺术类·音乐综合分（考生基数较小，同分位次靠前）
+  const artMusicMap = [
+    [740, 10],[720, 40],[700, 120],[680, 300],[660, 700],
+    [640, 1400],[620, 2500],[600, 4200],[580, 6800],[560, 10500],
+    [540, 15500],[520, 22000],[500, 31000],[480, 42000],[450, 62000],
+    [420, 88000]
+  ];
+  // 艺术类·编导/播音综合分（考生基数中等）
+  const artBdMap = [
+    [740, 15],[720, 60],[700, 160],[680, 380],[660, 900],
+    [640, 1800],[620, 3200],[600, 5500],[580, 8800],[560, 13500],
+    [540, 20000],[520, 28500],[500, 40000],[480, 54000],[450, 78000],
+    [420, 110000]
+  ];
+  // 艺术类·仅文化课分（艺术类文化线普遍 300-450，映射到艺术生文化课位次）
+  const artCultureMap = [
+    [520, 100],[500, 400],[480, 1200],[460, 3000],[440, 6500],
+    [420, 12000],[400, 20000],[380, 32000],[360, 48000],[340, 68000],
+    [320, 92000],[300, 125000],[280, 165000]
+  ];
+  let map;
+  if (subject === 'arts') map = artsMap;
+  else if (subject === 'art_ms') map = artMsMap;
+  else if (subject === 'art_music') map = artMusicMap;
+  else if (subject === 'art_bd') map = artBdMap;
+  else if (subject === 'art_culture') map = artCultureMap;
+  else map = scienceMap;
+  if (score >= map[0][0]) return map[0][1];
+  for (let i = 0; i < map.length - 1; i++) {
+    if (score <= map[i][0] && score >= map[i+1][0]) {
+      const [s1, r1] = map[i], [s2, r2] = map[i+1];
+      const ratio = (s1 - score) / (s1 - s2);
+      return Math.round(r1 + (r2 - r1) * ratio);
+    }
+  }
+  return map[map.length-1][1] * 2;
+}
+
+// ============ 判断院校是否为艺术类相关 ============
+function isArtCollege(c) {
+  // 校名含艺术类关键词（美院、音乐学院、传媒、戏剧、电影等）
+  if (/艺术|美术|音乐|戏剧|电影|传媒|设计|舞蹈|工艺美术|服装|视觉|印刷|表演|导演|广播/.test(c.name)) return true;
+  // level 含"艺术"（如"艺术学院/顶级"、"双非公办/特色"含艺术）
+  if (/艺术/.test(c.level)) return true;
+  // majorLib 含艺术相关关键词
+  return c.majorLib.some(m => /美术|设计|音乐|舞蹈|表演|导演|摄影|视觉|数字媒体|动画|工艺|书法|戏剧|广播电视编导|播音|服装/.test(m));
+}
+
+// ============ 冲/稳/保 分层筛选 ============
+function recommendByRank(userRank, prefProv, subject) {
+  const isArtMode = subject && subject.indexOf('art_') === 0;
+  const groups = { chong: [], wen: [], bao: [] };
+  collegeDB.forEach(c => {
+    if (prefProv && c.prov !== prefProv) return;
+    if (isArtMode && !isArtCollege(c)) return;
+    const rank = collegeRankMap[c.name];
+    if (!rank) return;
+    const ratio = rank / userRank;
+    // 冲：院校位次比用户高（rank小）15%~65%
+    if (ratio >= 0.35 && ratio < 0.85) groups.chong.push({...c, rank});
+    // 稳：接近用户位次 ±20%
+    else if (ratio >= 0.85 && ratio <= 1.20) groups.wen.push({...c, rank});
+    // 保：院校位次比用户低（rank大）20%~250%
+    else if (ratio > 1.20 && ratio <= 3.5) groups.bao.push({...c, rank});
+  });
+  Object.keys(groups).forEach(k => {
+    groups[k].sort((a,b) => a.rank - b.rank);
+    groups[k] = groups[k].slice(0, isArtMode ? 12 : 10);
+  });
+  return groups;
+}
+
+// ============ 分数推荐面板初始化 ============
+(function initScorePanel() {
+  const modeSel = document.getElementById('score-mode');
+  const rowScore = document.getElementById('row-score');
+  const rowRank = document.getElementById('row-rank');
+  const provSel = document.getElementById('pref-prov');
+  const resultEl = document.getElementById('recommend-result');
+
+  // 填充省份下拉
+  [...new Set(collegeDB.map(c => c.prov))].forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p; opt.textContent = p;
+    provSel.appendChild(opt);
+  });
+
+  modeSel.addEventListener('change', () => {
+    if (modeSel.value === 'score') {
+      rowScore.style.display = 'flex';
+      rowRank.style.display = 'none';
+    } else {
+      rowScore.style.display = 'none';
+      rowRank.style.display = 'flex';
+    }
+  });
+
+  function renderGroup(cls, icon, title, desc, list) {
+    if (list.length === 0) {
+      return `<div class="recommend-group ${cls}">
+        <div class="recommend-group-header">
+          <div class="recommend-group-title">${icon} ${title}</div>
+          <div class="recommend-group-desc">${desc}</div>
+        </div>
+        <div class="empty" style="padding:10px 0;">该档暂无匹配院校（可调整省份筛选或位次）</div>
+      </div>`;
+    }
+    return `<div class="recommend-group ${cls}">
+      <div class="recommend-group-header">
+        <div class="recommend-group-title">${icon} ${title} <span style="font-size:13px;font-weight:400;color:#999;margin-left:4px;">${list.length} 所</span></div>
+        <div class="recommend-group-desc">${desc}</div>
+      </div>
+      <div class="recommend-grid">
+        ${list.map(c => {
+          const levelBits = [];
+          if (c.level.indexOf("C9") !== -1) levelBits.push("C9");
+          if (c.level.indexOf("985") !== -1) levelBits.push("985");
+          if (c.level.indexOf("211") !== -1) levelBits.push("211");
+          if (levelBits.length === 0) levelBits.push("本科");
+          return `<div class="recommend-card" data-name="${c.name}">
+            <div class="rc-name">${c.name}</div>
+            <div class="rc-meta">${c.prov} · ${levelBits.join('/')} · 参考位次 ${c.rank.toLocaleString()}</div>
+            <div class="rc-tags">${c.majorLib.slice(0,3).map(m => `<span class="rc-tag">${m}</span>`).join('')}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  }
+
+  document.getElementById('btn-recommend').addEventListener('click', () => {
+    let userRank;
+    let modeText;
+    let subject = null;
+    if (modeSel.value === 'score') {
+      const score = parseInt(document.getElementById('score-input').value);
+      subject = document.getElementById('score-subject').value;
+      // 分数区间校验：艺术类允许更低分（含仅文化课）
+      const isArt = subject.indexOf('art_') === 0;
+      const minScore = subject === 'art_culture' ? 200 : (isArt ? 300 : 300);
+      const maxScore = 750;
+      if (!score || score < minScore || score > maxScore) {
+        resultEl.innerHTML = `<div class="empty" style="padding:20px;">⚠️ 请输入 ${minScore}-${maxScore} 之间的合理分数</div>`;
+        return;
+      }
+      userRank = scoreToRank(score, subject);
+      const subjectLabel = {
+        science: '理科/物理组',
+        arts: '文科/历史组',
+        art_ms: '艺术类·美术（综合分）',
+        art_music: '艺术类·音乐（综合分）',
+        art_bd: '艺术类·编导/播音（综合分）',
+        art_culture: '艺术类·仅文化课分'
+      }[subject] || subject;
+      const rankLabel = isArt ? '估算艺术生位次' : '估算全省位次';
+      modeText = `分数 <b>${score}</b>（${subjectLabel}）→ ${rankLabel} <b>${userRank.toLocaleString()}</b>`;
+    } else {
+      userRank = parseInt(document.getElementById('rank-input').value);
+      if (!userRank || userRank < 1) {
+        resultEl.innerHTML = '<div class="empty" style="padding:20px;">⚠️ 请输入有效的位次</div>';
+        return;
+      }
+      modeText = `全省位次 <b>${userRank.toLocaleString()}</b>`;
+    }
+    const prov = provSel.value;
+    const provText = prov ? `｜筛选省份：<b>${prov}</b>` : '｜范围：全国';
+    const artText = (subject && subject.indexOf('art_') === 0) ? `｜<b style="color:#ba68c8;">🎨 艺术类模式（仅展示艺术院校/艺术专业强校）</b>` : '';
+    const groups = recommendByRank(userRank, prov, subject);
+
+    resultEl.innerHTML = `
+      <div style="padding:12px 4px 8px;font-size:14px;color:#555;">📍 ${modeText}${provText}${artText}</div>
+      ${renderGroup('chong','🚀','冲一冲','建议冲刺，有一定挑战但可争取', groups.chong)}
+      ${renderGroup('wen','✅','稳一稳','录取概率较高，主力志愿区间', groups.wen)}
+      ${renderGroup('bao','🛡️','保一保','录取概率大，作为兜底保障', groups.bao)}
+    `;
+  });
+
+  // 事件委托：点击推荐卡片弹出院校详情
+  resultEl.addEventListener('click', (e) => {
+    const card = e.target.closest('.recommend-card');
+    if (card && card.dataset.name) showCollegeDetail(card.dataset.name);
+  });
+})();
+
+// ============ 位次 → 分数反推（分段线性插值）============
+function rankToScore(rank, subject) {
+  const scienceMap = [
+    [710, 20],[700, 100],[690, 300],[680, 600],[670, 1200],
+    [660, 2000],[650, 3200],[640, 5000],[630, 7500],[620, 11000],
+    [610, 16000],[600, 22000],[590, 30000],[580, 40000],[570, 52000],
+    [560, 67000],[550, 85000],[540, 105000],[520, 155000],[500, 220000],
+    [480, 300000],[450, 420000]
+  ];
+  const artsMap = [
+    [680, 30],[670, 100],[660, 300],[650, 700],[640, 1500],
+    [630, 2800],[620, 4500],[610, 7000],[600, 10500],[590, 15000],
+    [580, 21000],[570, 28000],[560, 37000],[550, 48000],[540, 60000],
+    [520, 90000],[500, 130000],[480, 180000],[450, 260000]
+  ];
+  const map = subject === 'arts' ? artsMap : scienceMap;
+  if (rank <= map[0][1]) return map[0][0];
+  for (let i = 0; i < map.length - 1; i++) {
+    const [s1, r1] = map[i], [s2, r2] = map[i+1];
+    if (rank >= r1 && rank <= r2) {
+      const ratio = (rank - r1) / (r2 - r1);
+      return Math.round(s1 + (s2 - s1) * ratio);
+    }
+  }
+  // 超出最末档，线性外推
+  const [sLast, rLast] = map[map.length-1];
+  const [sPrev, rPrev] = map[map.length-2];
+  const slope = (sLast - sPrev) / (rLast - rPrev);
+  return Math.max(400, Math.round(sLast + slope * (rank - rLast)));
+}
+
+// ============ 某院校的强势专业（反向遍历 majorKeywords）============
+function getStrongMajorsForCollege(collegeName) {
+  const college = collegeDB.find(c => c.name === collegeName);
+  if (!college) return [];
+  const results = [];
+  Object.keys(majorKeywords).forEach(majorName => {
+    const keywords = majorKeywords[majorName];
+    let score = 0;
+    let hasPeakHit = false;
+    college.majorLib.forEach(lib => {
+      keywords.forEach(kw => {
+        if (lib.indexOf(kw) !== -1) {
+          const isPeak = /顶尖|A\+|王牌|最全/.test(lib);
+          score += isPeak ? 4 : 1;
+          if (isPeak) hasPeakHit = true;
+        }
+      });
+    });
+    if (score > 0) {
+      results.push({ major: majorName, score, peak: hasPeakHit });
+    }
+  });
+  results.sort((a, b) => b.score - a.score);
+  return results;
+}
+
+// ============ 院校详情弹层 ============
+function showCollegeDetail(collegeName) {
+  const c = collegeDB.find(x => x.name === collegeName);
+  if (!c) return;
+  const rank = collegeRankMap[collegeName];
+  const scienceScore = rank ? rankToScore(rank, 'science') : null;
+  const artsScore = rank ? rankToScore(rank, 'arts') : null;
+  const strongMajors = getStrongMajorsForCollege(collegeName);
+
+  const levelShort = c.level.indexOf("C9") !== -1 ? "C9·985·211"
+    : c.level.indexOf("985") !== -1 ? "985·211"
+    : c.level.indexOf("211") !== -1 ? "211"
+    : "本科";
+
+  // 层次说明
+  const levelDesc = c.level.indexOf("C9") !== -1
+    ? "九校联盟（C9）成员，国内顶尖研究型大学"
+    : c.level.indexOf("985") !== -1
+    ? "985 工程 & 211 工程双料入选，国家重点建设高校"
+    : c.level.indexOf("211") !== -1
+    ? "211 工程入选高校，国家重点建设的百所高等学校之一"
+    : "普通本科院校";
+
+  // 强势专业渲染（Top15）
+  let strongHTML = '';
+  if (strongMajors.length === 0) {
+    strongHTML = `<div class="strong-major-empty">😢 该校暂未匹配到收录的 68 个专业，可查看下方"学科方向"了解其重点领域</div>`;
+  } else {
+    strongHTML = `<div class="strong-major-list">
+      ${strongMajors.slice(0, 15).map(m => `
+        <div class="strong-major-item ${m.peak ? 'peak' : ''}" data-major="${m.major}">
+          ${m.major}${m.peak ? '<span class="badge">👑 顶尖</span>' : ''}
+        </div>
+      `).join('')}
+    </div>`;
+  }
+
+  // 最低分渲染
+  let scoreHTML = '';
+  if (rank && scienceScore && artsScore) {
+    scoreHTML = `<div class="score-est-grid">
+      <div class="score-est-card">
+        <div class="label">🔬 理科/物理组</div>
+        <div class="value">${scienceScore}<span class="suffix">分</span></div>
+        <div class="rank-info">对应全省位次约 ${rank.toLocaleString()}</div>
+      </div>
+      <div class="score-est-card arts">
+        <div class="label">📖 文科/历史组</div>
+        <div class="value">${artsScore}<span class="suffix">分</span></div>
+        <div class="rank-info">对应全省位次约 ${rank.toLocaleString()}</div>
+      </div>
+    </div>`;
+  } else {
+    scoreHTML = `<div class="strong-major-empty">暂无位次数据</div>`;
+  }
+
+  const dialog = document.getElementById('college-modal-dialog');
+  dialog.innerHTML = `
+    <div class="modal-header">
+      <div>
+        <h2>${c.name}</h2>
+        <div class="sub">
+          📍 ${c.prov}
+          <span class="level-badge">${levelShort}</span>
+        </div>
+        <div class="sub" style="margin-top:6px;font-size:12px;color:#95a5a6;">${levelDesc}</div>
+      </div>
+      <button class="modal-close" onclick="closeCollegeModal()" title="关闭">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="info-block">
+        <div class="info-block-title score">
+          💯 最低录取分数（演示级估算）
+          <span class="info-block-tip">基于全国综合位次反推，仅供参考，实际以当年各省官方分数线为准</span>
+        </div>
+        ${scoreHTML}
+      </div>
+      <div class="info-block">
+        <div class="info-block-title strong">
+          🏆 强势专业（Top ${Math.min(strongMajors.length, 15)}）
+          <span class="info-block-tip">按学科匹配度排序，👑 顶尖 = majorLib 含"顶尖/A+/王牌/最全"字样</span>
+        </div>
+        ${strongHTML}
+      </div>
+      <div class="info-block">
+        <div class="info-block-title lib">📚 学科方向（原生标签）</div>
+        <div class="lib-tags">
+          ${c.majorLib.map(m => `<span class="lib-tag">${m}</span>`).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+
+  // 强势专业点击 → 跳到对应专业 tab
+  dialog.querySelectorAll('.strong-major-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const majorName = el.dataset.major;
+      jumpToMajor(majorName);
+    });
+  });
+
+  document.getElementById('college-modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeCollegeModal() {
+  document.getElementById('college-modal').classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+// 跳转到专业 tab 并定位到指定专业
+function jumpToMajor(majorName) {
+  closeCollegeModal();
+  // 艺术专业优先命中 art tab（部分专业如"视觉传达设计"artsMajor 也有，但艺考视角走 art 更合适）
+  const isArt = typeof artMajor !== 'undefined' && artMajor[majorName];
+  const isArts = artsMajor && artsMajor[majorName];
+  const isScience = scienceMajor && scienceMajor[majorName];
+  if (!isArt && !isArts && !isScience) return;
+  const targetTab = isArt ? 'art' : (isArts ? 'arts' : 'science');
+  // 切换 tab
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelector(`.tab[data-tab="${targetTab}"]`).classList.add('active');
+  document.getElementById(`panel-${targetTab}`).classList.add('active');
+  // 触发点击对应专业项
+  setTimeout(() => {
+    const listId = targetTab === 'art' ? 'art-list' : (isArts ? 'arts-list' : 'science-list');
+    // 清空搜索框以确保目标项可见
+    const searchId = targetTab === 'art' ? 'art-search' : (isArts ? 'arts-search' : 'science-search');
+    const searchEl = document.getElementById(searchId);
+    if (searchEl) { searchEl.value = ''; searchEl.dispatchEvent(new Event('input')); }
+    const target = document.querySelector(`#${listId} .major-btn[data-name="${majorName}"]`);
+    if (target) {
+      target.click();
+      target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 100);
+}
+
+// ESC 关闭弹层
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeCollegeModal();
+});
+</script>
+</body>
+</html>

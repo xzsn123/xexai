@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学而行 AI - 作品展示</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
+                <img src="学而行商标.7970109acf.png" class="logo-img" alt="学而行 AI">
+                <span>学而行 AI</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html" class="active">首页</a></li>
+                <li><a href="works.html">作品库</a></li>
+                <li><a href="team.html">本次活动成员</a></li>
+                <li><a href="contact.html">联系我们</a></li>
+            </ul>
+            <div class="nav-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" placeholder="搜索作品...">
+            </div>
+            <button class="hamburger" aria-label="菜单">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero 首屏 -->
+    <section class="hero">
+        <div class="container">
+            <h1>学而行 AI</h1>
+            <p class="slogan">学AI思维，行未来之道——学而行 AI 首届学生团队作品展</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-number">55</div>
+                    <div class="stat-label">作品总数</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number">55</div>
+                    <div class="stat-label">团队人数</div>
+                </div>
+            </div>
+            <a href="works.html" class="btn btn-primary">查看全部作品 →</a>
+        </div>
+    </section>
+
+    <!-- 品类快速入口 -->
+    <section class="section" style="padding-top:40px">
+        <div class="container">
+            <div class="section-header">
+                <h2>探索我们的作品</h2>
+                <p>四大创作方向，总有一款适合你</p>
+            </div>
+            <div class="category-grid">
+                <a href="works.html?category=web" class="category-card fade-in">
+                    <div class="icon-wrap icon-web">🌐</div>
+                    <h3>网页应用</h3>
+                    <p class="count">22 个作品</p>
+                </a>
+                <a href="works.html?category=game" class="category-card fade-in">
+                    <div class="icon-wrap icon-game">🎮</div>
+                    <h3>HTML 游戏</h3>
+                    <p class="count">4 个作品</p>
+                </a>
+                <a href="works.html?category=video" class="category-card fade-in">
+                    <div class="icon-wrap icon-video">🎬</div>
+                    <h3>视频作品</h3>
+                    <p class="count">2 个作品</p>
+                </a>
+                <a href="works.html?category=image" class="category-card fade-in">
+                    <div class="icon-wrap icon-image">🖼️</div>
+                    <h3>图片作品</h3>
+                    <p class="count">1 个作品</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 精选作品展区 -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>精选作品</h2>
+                <p>团队最引以为豪的代表作</p>
+                <a href="works.html" class="more-link">查看更多 →</a>
+            </div>
+            <div class="works-grid" id="featuredWorks"></div>
+        </div>
+    </section>
+
+    <!-- 团队亮点 -->
+    <section class="section" style="background:var(--bg-card);border-top:1px solid var(--border);border-bottom:1px solid var(--border)">
+        <div class="container">
+            <div class="section-header">
+                <h2>为什么选择我们</h2>
+                <p>用作品证明实力的学生团队</p>
+            </div>
+            <div class="highlights-grid">
+                <div class="highlight-card fade-in">
+                    <div class="icon">🚀</div>
+                    <h3>全栈技术能力</h3>
+                    <p>涵盖前端、后端、游戏开发、视频制作、视觉设计等多个领域，从代码到成品一站式交付</p>
+                </div>
+                <div class="highlight-card fade-in">
+                    <div class="icon">🎨</div>
+                    <h3>设计驱动创新</h3>
+                    <p>坚信好的设计是第一生产力，每个作品都经过精细的UI/UX打磨，追求极致用户体验</p>
+                </div>
+                <div class="highlight-card fade-in">
+                    <div class="icon">🤝</div>
+                    <h3>跨界协作精神</h3>
+                    <p>技术、设计、视频、游戏四组跨界合作，碰撞出独特的创意火花</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 最新更新 -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>最新发布</h2>
+                <p>看看我们最近在忙什么</p>
+            </div>
+            <div class="works-grid" id="latestWorks"></div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <h3>学而行 AI</h3>
+                </div>
+                <div class="footer-col">
+                    <h4>快速导航</h4>
+                    <a href="index.html">首页</a>
+                    <a href="works.html">作品库</a>
+                    <a href="team.html">本次活动成员</a>
+                    <a href="contact.html">联系我们</a>
+                </div>
+                <div class="footer-col">
+                    <h4>作品分类</h4>
+                    <a href="works.html?category=web">网页应用</a>
+                    <a href="works.html?category=game">HTML游戏</a>
+                    <a href="works.html?category=video">视频作品</a>
+                    <a href="works.html?category=image">图片作品</a>
+                </div>
+                <div class="footer-col">
+                    <h4>联系方式</h4>
+                    <a href="#">📧 studio@example.com</a>
+                    <a href="#">🏫 东川高级中学</a>
+                    <a href="#">💬 公众号：学而行 AI</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2025 学而行 AI. All rights reserved.</span>
+                <div class="footer-social">
+                    <a href="#" title="GitHub">⌂</a>
+                    <a href="#" title="bilibili">▶</a>
+                    <a href="#" title="微信">💬</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        // 精选作品渲染
+        const featuredGrid = document.getElementById('featuredWorks');
+        const featured = WORKS_DATA.filter(w => w.featured);
+        featuredGrid.innerHTML = featured.map(w => createWorkCard(w)).join('');
+
+        // 最新作品渲染
+        const latestGrid = document.getElementById('latestWorks');
+        const latest = [...WORKS_DATA].sort((a, b) => new Date(b.period.split(' - ')[0]) - new Date(a.period.split(' - ')[0])).slice(0, 3);
+        latestGrid.innerHTML = latest.map(w => createWorkCard(w)).join('');
+    </script>
+</body>
+</html>

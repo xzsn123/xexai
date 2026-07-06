@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作品库 - 学而行 AI</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="index.html" class="nav-brand">
+                <img src="学而行商标.7970109acf.png" class="logo-img" alt="学而行 AI">
+                <span>学而行 AI</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="works.html" class="active">作品库</a></li>
+                <li><a href="team.html">本次活动成员</a></li>
+                <li><a href="contact.html">联系我们</a></li>
+            </ul>
+            <div class="nav-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                <input type="text" placeholder="搜索作品...">
+            </div>
+            <button class="hamburger" aria-label="菜单">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 页面标题 -->
+    <section class="page-header">
+        <div class="container">
+            <h1>作品库</h1>
+            <p class="subtitle">共 <strong id="worksCount">0</strong> 个作品，探索我们的创作世界</p>
+        </div>
+    </section>
+
+    <!-- 筛选工具栏 -->
+    <div class="container">
+        <div class="filter-toolbar">
+            <div class="filter-row">
+                <div class="tab-group">
+                    <button class="tab-btn active" data-category="all">全部</button>
+                    <button class="tab-btn" data-category="web">🌐 网页应用</button>
+                    <button class="tab-btn" data-category="game">🎮 HTML游戏</button>
+                    <button class="tab-btn" data-category="video">🎬 视频作品</button>
+                    <button class="tab-btn" data-category="image">🖼️ 图片作品</button>
+                </div>
+            </div>
+            <div class="filter-row">
+                <div class="tag-group"></div>
+                <button class="filter-toggle">✦ 仅看获奖</button>
+            </div>
+            <div class="filter-row">
+                <div class="search-box">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                    <input type="text" placeholder="搜索作品标题或标签...">
+                </div>
+                <select class="sort-select">
+                    <option value="default">默认排序</option>
+                    <option value="newest">最新发布</option>
+                    <option value="popular">最多浏览</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- 作品列表 -->
+    <div class="container" style="padding-bottom:60px">
+        <div class="works-grid" id="worksGrid"></div>
+        <div class="load-more-area" id="loadMoreArea">
+            <button class="btn btn-outline" id="loadMoreBtn">加载更多 ↓</button>
+        </div>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-info">
+                    <h3><img src="学而行商标.7970109acf.png" class="logo-img" alt="学而行 AI" style="display:inline-block;vertical-align:middle;margin-right:8px"> 学而行 AI</h3>
+                    <p>以技术驱动创意，用作品改变世界。</p>
+                </div>
+                <div class="footer-col">
+                    <h4>快速导航</h4>
+                    <a href="index.html">首页</a>
+                    <a href="works.html">作品库</a>
+                    <a href="team.html">本次活动成员</a>
+                    <a href="contact.html">联系我们</a>
+                </div>
+                <div class="footer-col">
+                    <h4>作品分类</h4>
+                    <a href="works.html?category=web">网页应用</a>
+                    <a href="works.html?category=game">HTML游戏</a>
+                    <a href="works.html?category=video">视频作品</a>
+                    <a href="works.html?category=image">图片作品</a>
+                </div>
+                <div class="footer-col">
+                    <h4>联系方式</h4>
+                    <a href="#">📧 studio@example.com</a>
+                    <a href="#">🏫 东川高级中学</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>© 2025 学而行 AI. All rights reserved.</span>
+                <div class="footer-social">
+                    <a href="#" title="GitHub">⌂</a>
+                    <a href="#" title="bilibili">▶</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/data.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
