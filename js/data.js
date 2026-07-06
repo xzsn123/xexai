@@ -41,7 +41,7 @@ const WORKS_DATA = [
         id: 5, title: "XENNO品牌展示", subtitle: "XENNO品牌形象与产品展示官网", category: "web", categoryName: "网页应用",
         tags: ["品牌", "展示", "官网"], featured: true, award: "优秀作品",
         period: "2026.07.04", views: 1800,
-        cover: "", previewType: "iframe", previewUrl: "", githubUrl: "", liveUrl: "",
+        cover: "screenshots/work_5.png", previewType: "iframe", previewUrl: "", githubUrl: "", liveUrl: "",
         team: [{ name: "许雯茜", role: "设计与开发" }],
         techStack: ["HTML", "CSS", "JavaScript"], designTools: ["Figma"],
         content: "<h3>项目简介</h3><p>XENNO品牌展示官网，呈现品牌形象与核心产品。</p>"
@@ -115,7 +115,7 @@ const WORKS_DATA = [
         id: 13, title: "情绪植物共生系列图", subtitle: "情绪与植物共生的创意插画系列", category: "image", categoryName: "图片作品",
         tags: ["插画", "情绪", "植物"], featured: true, award: "",
         period: "2026.07.04", views: 2600,
-        cover: "", previewType: "image", images: [],
+        cover: "screenshots/work_13.png", previewType: "image", images: [],
         team: [{ name: "陈玺竹", role: "绘画设计" }],
         techStack: ["Procreate", "Photoshop"], designTools: ["Procreate", "Photoshop"],
         content: "<h3>作品简介</h3><p>情绪植物共生系列图是一组以情绪与植物共生关系为主题的创意插画作品。</p>"
@@ -124,7 +124,7 @@ const WORKS_DATA = [
         id: 14, title: "模特走台展示视频", subtitle: "时装模特T台走秀展示视频作品", category: "video", categoryName: "视频作品",
         tags: ["时装", "走秀", "展示"], featured: false, award: "",
         period: "2026.07.04", views: 3400,
-        cover: "", previewType: "video", videoUrl: "",
+        cover: "screenshots/work_14.png", previewType: "video", videoUrl: "",
         team: [{ name: "曹雅灵", role: "导演/剪辑" }],
         techStack: ["Premiere Pro", "After Effects"], designTools: [],
         content: "<h3>作品简介</h3><p>模特走台展示视频是一部展现时装模特T台风采的视频作品。</p>"
@@ -142,7 +142,7 @@ const WORKS_DATA = [
         id: 16, title: "医典系统", subtitle: "医学知识查询与健康管理平台", category: "web", categoryName: "网页应用",
         tags: ["医学", "健康", "查询"], featured: true, award: "",
         period: "2026.07.04", views: 1400,
-        cover: "", previewType: "iframe", previewUrl: "", githubUrl: "", liveUrl: "",
+        cover: "screenshots/work_16.png", previewType: "iframe", previewUrl: "", githubUrl: "", liveUrl: "",
         team: [{ name: "刘俊睿", role: "设计与开发" }],
         techStack: ["HTML", "CSS", "JavaScript"], designTools: ["Figma"],
         content: "<h3>项目简介</h3><p>医典系统是一个医学知识查询与健康管理平台。</p>"
@@ -180,7 +180,7 @@ const WORKS_DATA = [
         id: 20, title: "赛车视频", subtitle: "高燃赛车竞速主题视频作品", category: "video", categoryName: "视频作品",
         tags: ["赛车", "竞速", "视频"], featured: true,
         period: "2026.07.04", views: 1300,
-        cover: "", previewType: "video", videoUrl: "",
+        cover: "screenshots/work_20.png", previewType: "video", videoUrl: "",
         team: [{ name: "徐永棋", role: "导演/剪辑" }],
         techStack: ["Premiere Pro", "After Effects"], designTools: [],
         content: "<h3>作品简介</h3><p>赛车视频是一部高燃赛车竞速主题的视频作品。</p>"
@@ -218,7 +218,7 @@ const WORKS_DATA = [
         id: 24, title: "蓝警游戏", subtitle: "蓝色警戒风格的策略塔防游戏", category: "game", categoryName: "HTML游戏",
         tags: ["策略", "塔防", "军事"], featured: false,
         period: "2026.07.04", views: 2800,
-        cover: "", previewType: "iframe", previewUrl: "", githubUrl: "", liveUrl: "",
+        cover: "screenshots/work_24.png", previewType: "iframe", previewUrl: "", githubUrl: "", liveUrl: "",
         team: [{ name: "陈奕霖", role: "游戏设计" }],
         techStack: ["HTML5 Canvas", "JavaScript"], designTools: ["Aseprite"],
         content: "<h3>游戏简介</h3><p>蓝警游戏是一款蓝色警戒风格的策略塔防游戏。</p>"
@@ -258,7 +258,7 @@ const WORKS_DATA = [
         id: 28, title: "AI短剧", subtitle: "AI辅助创作的短视频微剧作品", category: "video", categoryName: "视频作品",
         tags: ["AI", "短剧", "创意"], featured: false,
         period: "2026.07.04", views: 3000,
-        cover: "", previewType: "video", videoUrl: "",
+        cover: "screenshots/work_28.png", previewType: "video", videoUrl: "",
         team: [{ name: "闫宣沂", role: "导演/剪辑" }],
         techStack: ["AI工具", "Premiere Pro"], designTools: [],
         content: "<h3>作品简介</h3><p>AI短剧是一部利用AI辅助创作的短视频微剧作品。</p>"
